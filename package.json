@@ -1,0 +1,49 @@
+{
+  "name": "ivritcode",
+  "version": "1.0.0",
+  "description": "A deterministic 22-operator Hebrew symbolic computing engine over 23 base-22 registers",
+  "homepage": "https://ivritcode.org",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Richardatf/IvritCode.git"
+  },
+  "type": "module",
+  "main": "dist/lib.js",
+  "types": "dist/lib.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/lib.d.ts",
+      "import": "./dist/lib.js"
+    }
+  },
+  "bin": {
+    "ivritcode": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "examples",
+    "README.md"
+  ],
+  "scripts": {
+    "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\"",
+    "build": "npm run clean && tsc",
+    "test": "npm run build && vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "lint": "tsc --noEmit",
+    "dev": "npm run build && node scripts/dev-server.mjs",
+    "start": "node scripts/dev-server.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "openai": "^5.10.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.6.3",
+    "vitest": "^4.1.10"
+  },
+  "license": "MIT"
+}
