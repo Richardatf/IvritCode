@@ -1,0 +1,11 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/unicode" },
+    { "path": "packages/core" },
+    { "path": "packages/analysis" },
+    { "path": "packages/lexicon" },
+    { "path": "apps/cli" },
+    { "path": "apps/web" }
+  ]
+}

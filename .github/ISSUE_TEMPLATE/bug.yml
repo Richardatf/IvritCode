@@ -1,0 +1,22 @@
+name: Bug report
+description: Report reproducible IvritCode behavior
+body:
+  - type: textarea
+    id: source
+    attributes:
+      label: IvritCode source
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version and environment
+    validations:
+      required: true
