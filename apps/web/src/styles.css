@@ -274,6 +274,31 @@ main {
   gap: 1.2rem;
   padding: 2rem 0;
 }
+.site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 8;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 0.7rem;
+  border: 1px solid var(--line);
+  border-top: 0;
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: blur(14px);
+}
+.site-nav a {
+  color: var(--muted);
+  text-decoration: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+}
+.site-nav a:hover,
+.site-nav a:focus-visible {
+  color: var(--text);
+  background: var(--panel-2);
+}
 .panel {
   background: color-mix(in srgb, var(--panel) 94%, transparent);
   border: 1px solid var(--line);
@@ -281,6 +306,135 @@ main {
   padding: clamp(1rem, 2vw, 1.7rem);
   box-shadow: var(--shadow);
   min-width: 0;
+}
+.guide {
+  grid-column: 1/-1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+  gap: 2rem;
+}
+.guide-intro h2,
+.reference-heading h2 {
+  font-size: clamp(1.5rem, 3vw, 2.4rem);
+  letter-spacing: -0.025em;
+  text-transform: none;
+}
+.guide-intro > p:not(.eyebrow) {
+  max-width: 75ch;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.guide-lede {
+  font-size: 1.1rem;
+  color: var(--text) !important;
+}
+.quick-start {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.65rem;
+  counter-reset: steps;
+}
+.quick-start li {
+  counter-increment: steps;
+  display: grid;
+  grid-template-columns: 2rem 5rem 1fr;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+.quick-start li::before {
+  content: counter(steps, decimal-leading-zero);
+  color: var(--gold);
+  font-size: 0.72rem;
+}
+.quick-start span,
+.reference-heading > p,
+.modifier-notes p {
+  color: var(--muted);
+  line-height: 1.5;
+}
+.reference-block {
+  grid-column: 1/-1;
+  border-top: 1px solid var(--line);
+  padding-top: 1.5rem;
+  scroll-margin-top: 5rem;
+}
+.reference-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.reference-heading p {
+  margin-bottom: 0;
+}
+.reference-heading > p {
+  max-width: 38ch;
+  text-align: right;
+}
+.operator-menu {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+.operator-menu button {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr;
+  grid-template-rows: auto auto auto;
+  gap: 0.1rem 0.7rem;
+  text-align: left;
+  padding: 0.85rem;
+}
+.operator-menu button > span {
+  grid-row: 1/-1;
+  font: 2rem var(--hebrew);
+  color: var(--gold-bright);
+}
+.operator-menu small,
+.operator-menu em {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-style: normal;
+}
+.operator-menu em {
+  color: var(--indigo);
+}
+.modifier-layout {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 1.2rem;
+}
+.modifier-menu {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+.modifier-menu div {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+}
+.modifier-menu span {
+  min-width: 1.8rem;
+  font: 1.5rem var(--hebrew);
+  color: var(--gold-bright);
+}
+.modifier-menu b {
+  font-size: 0.78rem;
+}
+.modifier-notes {
+  padding: 0.3rem 1rem;
+  border-left: 2px solid var(--gold);
 }
 .chamber,
 .observatory {
@@ -744,6 +898,15 @@ footer {
   .panel {
     grid-column: 1 !important;
   }
+  .guide {
+    grid-template-columns: 1fr;
+  }
+  .operator-menu {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .modifier-layout {
+    grid-template-columns: 1fr;
+  }
   .registers.ring {
     transform: scale(0.72);
     margin-block: -2rem;
@@ -775,6 +938,25 @@ footer {
   }
   .section-title {
     display: block;
+  }
+  .site-nav {
+    position: static;
+  }
+  .reference-heading {
+    display: block;
+  }
+  .reference-heading > p {
+    text-align: left;
+  }
+  .operator-menu,
+  .modifier-menu {
+    grid-template-columns: 1fr;
+  }
+  .quick-start li {
+    grid-template-columns: 2rem 1fr;
+  }
+  .quick-start li span {
+    grid-column: 2;
   }
   .section-title p {
     text-align: left;

@@ -3,6 +3,7 @@ import { analyzeGates } from "@ivritcode/analysis";
 import {
   ALEPH_OLAM_INDEX,
   HEBREW_LETTERS,
+  INSTRUCTION_DEFINITIONS,
   LETTER_NAMES,
   executeProgram,
   parseProgram,
@@ -15,6 +16,19 @@ import {
 import { analyzeLexicon, loadLexicon, type LexiconData } from "@ivritcode/lexicon";
 import { downloadProgram, initialState, type InitialMode } from "./logic.js";
 const SAMPLE = "# IvritCode · בראשית\nב ר א ש י ת";
+const MODIFIERS = [
+  ["ְ", "Sheva"],
+  ["ִ", "Hiriq"],
+  ["ֵ", "Tzere"],
+  ["ֶ", "Segol"],
+  ["ַ", "Patach"],
+  ["ָ", "Qamatz"],
+  ["ֹ", "Holam"],
+  ["ֻ", "Qubutz"],
+  ["ּ", "Dagesh"],
+  ["ׁ", "Shin dot"],
+  ["ׂ", "Sin dot"],
+] as const;
 type View = "ring" | "grid" | "table";
 type Theme = "auto" | "dark" | "light" | "contrast";
 interface ChavrutaResponse {
@@ -192,7 +206,107 @@ export function App() {
           </select>
         </label>
       </header>
+      <nav className="site-nav" aria-label="IvritCode sections">
+        <a href="#about">What it is</a>
+        <a href="#operators">Operators</a>
+        <a href="#modifiers">Modifiers</a>
+        <a href="#source">Try it</a>
+        <a href="#gates">231 Gates</a>
+      </nav>
       <main>
+        <section className="panel guide" id="about">
+          <div className="guide-intro">
+            <p className="eyebrow">Start here</p>
+            <h2>What is IvritCode?</h2>
+            <p className="guide-lede">
+              IvritCode is an experimental symbolic programming language in which each Hebrew letter
+              is an instruction. A program runs in stored logical order and transforms a circular
+              state of 22 visible registers plus one global <i>Aleph Olam</i> register.
+            </p>
+            <p>
+              This is a deterministic computing system, not a translation tool, religious authority,
+              or traditional gematria. The same source and initial state always produce the same
+              result.
+            </p>
+          </div>
+          <ol className="quick-start" aria-label="How to use IvritCode">
+            <li>
+              <b>Write</b>
+              <span>Enter Hebrew letters in the Source Chamber.</span>
+            </li>
+            <li>
+              <b>Run</b>
+              <span>Execute the program, or step through one letter at a time.</span>
+            </li>
+            <li>
+              <b>Observe</b>
+              <span>Watch registers, trace changes, and inspect adjacent-letter gates.</span>
+            </li>
+          </ol>
+          <div className="reference-block" id="operators">
+            <div className="reference-heading">
+              <div>
+                <p className="eyebrow">Instruction menu</p>
+                <h2>22 operators</h2>
+              </div>
+              <p>Select a letter to append it to the Source Chamber.</p>
+            </div>
+            <div className="operator-menu">
+              {INSTRUCTION_DEFINITIONS.map((operator) => (
+                <button
+                  key={operator.letter}
+                  type="button"
+                  onClick={() => setSource((current) => `${current.trimEnd()} ${operator.letter}`)}
+                  title={`Add ${operator.name} to the source`}
+                >
+                  <span lang="he">{operator.letter}</span>
+                  <b>{operator.name}</b>
+                  <small>{operator.summary}</small>
+                  {(operator.readsAlephOlam || operator.writesAlephOlam) && (
+                    <em>
+                      {operator.readsAlephOlam && "reads A∞"}
+                      {operator.readsAlephOlam && operator.writesAlephOlam && " · "}
+                      {operator.writesAlephOlam && "writes A∞"}
+                    </em>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="reference-block" id="modifiers">
+            <div className="reference-heading">
+              <div>
+                <p className="eyebrow">Mark menu</p>
+                <h2>Modifiers</h2>
+              </div>
+              <p>Marks attach to the preceding letter; they are never standalone operators.</p>
+            </div>
+            <div className="modifier-layout">
+              <div className="modifier-menu">
+                {MODIFIERS.map(([mark, name]) => (
+                  <div key={name}>
+                    <span lang="he">◌{mark}</span>
+                    <b>{name}</b>
+                  </div>
+                ))}
+              </div>
+              <div className="modifier-notes">
+                <p>
+                  <b>Normal mode:</b> niqqud is preserved in the trace but computationally neutral.
+                </p>
+                <p>
+                  <b>Tav + Dagesh (תּ):</b> explicitly halts execution.
+                </p>
+                <p>
+                  <b>Strict modifiers:</b> reports unsupported computational modifiers.
+                </p>
+                <p>
+                  <b>Cantillation:</b> recognized and preserved, with no execution behavior in v1.0.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
         <section className="chamber panel" id="source">
           <div className="section-title">
             <div>
@@ -403,7 +517,7 @@ export function App() {
             )}
           </div>
         </section>
-        <section className="panel gates">
+        <section className="panel gates" id="gates">
           <div className="section-title">
             <div>
               <span>04</span>
