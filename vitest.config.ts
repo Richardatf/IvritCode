@@ -4,7 +4,7 @@ export default defineConfig({
     include: [
       "packages/*/tests/**/*.test.ts",
       "apps/*/tests/**/*.test.ts",
-      "netlify/functions/**/*.test.ts",
+      "netlify/tests/**/*.test.ts",
     ],
     coverage: { reporter: ["text", "html"] },
   },

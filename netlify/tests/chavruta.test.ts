@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { handler, validateModelOutput, validateRequest } from "./chavruta.js";
+import { handler, validateModelOutput, validateRequest } from "../functions/chavruta.js";
 describe("Chavruta function", () => {
   it("validates methods and bodies", async () => {
     expect((await handler({ httpMethod: "GET", headers: {} })).statusCode).toBe(405);
