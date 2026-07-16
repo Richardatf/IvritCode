@@ -1,49 +1,44 @@
 {
   "name": "ivritcode",
   "version": "1.0.0",
-  "description": "A deterministic 22-operator Hebrew symbolic computing engine over 23 base-22 registers",
+  "private": true,
+  "description": "IvritCode — a deterministic Hebrew symbolic computing language",
   "homepage": "https://ivritcode.org",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Richardatf/IvritCode.git"
-  },
-  "type": "module",
-  "main": "dist/lib.js",
-  "types": "dist/lib.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/lib.d.ts",
-      "import": "./dist/lib.js"
-    }
-  },
-  "bin": {
-    "ivritcode": "dist/cli.js"
-  },
-  "files": [
-    "dist",
-    "examples",
-    "README.md"
-  ],
-  "scripts": {
-    "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\"",
-    "build": "npm run clean && tsc",
-    "test": "npm run build && vitest run",
-    "test:watch": "vitest",
-    "typecheck": "tsc --noEmit",
-    "lint": "tsc --noEmit",
-    "dev": "npm run build && node scripts/dev-server.mjs",
-    "start": "node scripts/dev-server.mjs"
-  },
+  "repository": "github:richardatf-oss/IvritCode",
+  "license": "MIT",
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "dependencies": {
-    "openai": "^5.10.1"
+    "openai": "^6.16.0"
+  },
+  "scripts": {
+    "dev": "npm run dev -w @ivritcode/web",
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run build && vitest run --coverage.enabled=false",
+    "test:watch": "vitest",
+    "typecheck": "tsc -b --pretty false",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "cli": "npm run build -w @ivritcode/cli && node apps/cli/dist/index.js",
+    "clean": "node scripts/clean.mjs"
   },
   "devDependencies": {
-    "@types/node": "^22.10.2",
-    "typescript": "^5.6.3",
-    "vitest": "^4.1.10"
-  },
-  "license": "MIT"
+    "@eslint/js": "^9.39.2",
+    "@types/node": "^22.19.7",
+    "@vitest/coverage-v8": "^4.1.0",
+    "eslint": "^9.39.2",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.26",
+    "globals": "^16.5.0",
+    "prettier": "^3.8.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.53.1",
+    "vitest": "^4.1.0"
+  }
 }

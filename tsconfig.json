@@ -1,20 +1,11 @@
 {
-  "compilerOptions": {
-    "target": "ES2022",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "lib": ["ES2023", "DOM"],
-    "outDir": "dist",
-    "rootDir": "src",
-    "strict": true,
-    "declaration": true,
-    "sourceMap": true,
-    "skipLibCheck": true,
-    "noUncheckedIndexedAccess": false
-  },
-  "include": [
-    "src/alphabet.ts", "src/assembler.ts", "src/cli.ts", "src/errors.ts",
-    "src/gates.ts", "src/instruction.ts", "src/lexicon.ts", "src/lib.ts",
-    "src/parser.ts", "src/program.ts", "src/state.ts", "src/vm.ts", "src/web/**/*.ts"
+  "files": [],
+  "references": [
+    { "path": "packages/unicode" },
+    { "path": "packages/core" },
+    { "path": "packages/analysis" },
+    { "path": "packages/lexicon" },
+    { "path": "apps/cli" },
+    { "path": "apps/web" }
   ]
 }

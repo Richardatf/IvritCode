@@ -1,0 +1,6 @@
+archive/
+node_modules/
+**/dist/
+coverage/
+package-lock.json
+apps/web/public/og.png

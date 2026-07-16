@@ -1,0 +1,21 @@
+{
+  "name": "@ivritcode/lexicon",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./data/hebrew-lexicon.json": "./data/hebrew-lexicon.json"
+  },
+  "dependencies": {
+    "@ivritcode/unicode": "1.0.0"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc -b --pretty false"
+  }
+}

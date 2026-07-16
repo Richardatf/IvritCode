@@ -1,0 +1,17 @@
+{
+  "name": "@ivritcode/cli",
+  "version": "1.0.0",
+  "type": "module",
+  "bin": {
+    "ivritcode": "dist/index.js"
+  },
+  "dependencies": {
+    "@ivritcode/analysis": "1.0.0",
+    "@ivritcode/core": "1.0.0",
+    "@ivritcode/lexicon": "1.0.0"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc -b --pretty false"
+  }
+}

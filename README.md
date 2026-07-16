@@ -1,110 +1,171 @@
-# IvritCode
+# IvritCode · עבריתקוד
 
-IvritCode is a deterministic symbolic computing system. Its 22 Hebrew letters are executable operators over exactly 23 numeric registers: 22 visible letter registers and a distinguished Aleph Olam register. Every stored value is an integer in `Z22` (`0..21`). Quantum Etz Chaim is the project’s conceptual computing architecture and research framework, not a claim of established quantum physics or theological authority.
+**Twenty-two operators. Twenty-three registers. One deterministic symbolic machine.**
 
-## Status
+[IvritCode.org](https://ivritcode.org) introduces an experimental programming language rooted in Hebrew letter structure. Hebrew source is parsed in logical Unicode order and executed over 22 visible letter registers plus the distinguished numeric Aleph Olam register.
 
-Version 1.0 consolidates the TypeScript engine, Unicode parser, CLI, browser demo, 231-Gates analysis, lexicon matching, and Chavruta contract. The original 22 transformations from `src/vm.ts` are preserved. The former English stack VM and browser-only toy VM are no longer public execution paths.
+IvritCode is implemented computation. Quantum Etz Chaim is its broader conceptual research architecture—not a claim that this software runs on quantum hardware. Outputs do not prove mystical truths, raw strings are not automatically Hebrew words, and the Chavruta is not a religious authority.
 
-Implemented:
+## Quick start
 
-- All 22 letter operators and exactly 23 normalized registers
-- Immutable stepping, before/after traces, and enforced step limits
-- UTF-8 Hebrew parsing with NFD normalization and source locations
-- Final forms `ךםןףץ` normalized to `כמנפצ`
-- Niqqud and cantillation retention in parsing, traces, and disassembly
-- Neutral modifier policy by default and explicit rejection in strict mode
-- Directed, non-circular 231-Gates analysis by default
-- Raw lexicon windows distinguished from confirmed matches
-- CLI, browser app, examples, tests, and a validated Netlify Chavruta endpoint
-
-Experimental or reserved:
-
-- Niqqud has no transformation semantics yet
-- Cantillation has no grouping or control-flow semantics yet
-- Execution policy hooks, permissions, and deterministic seeds are metadata extension points only
-- Symbolic interpretations are exploratory and are not scientific, prophetic, medical, or halachic conclusions
-
-## Machine Model
-
-Registers `0..21` correspond to `א..ת`; register `22` is Aleph Olam. Aleph Olam remains numeric. Engine version, program name, current step, limits, errors, permissions, seeds, and extension metadata live in a separate `ExecutionContext`.
-
-Arithmetic is normalized modulo 22 after each operation. `INSTRUCTION_DEFINITIONS` documents every operator’s name, index, technical description, and Aleph Olam access. The detailed transformations remain in `src/vm.ts`.
-
-## Source Grammar
-
-Hebrew letters are instructions. Whitespace and ordinary punctuation are ignored. `#` begins a comment through the end of the line. Combining marks attach to the preceding letter. Source locations retain filename, line, column, offset, and raw normalized instruction text.
-
-Recognized niqqud includes Sheva, Hiriq, Tzere, Segol, Patach, Qamatz, Holam, Qubutz, Dagesh, Shin Dot, and Sin Dot. Normal execution treats these as neutral while retaining them. `--strict-modifiers` reports an `UnsupportedModifierError`. Cantillation marks are retained and displayed but intentionally have no execution meaning in v1.0.
-
-## Install And Verify
-
-Node.js 20 or newer is required.
+Requires Node.js 22 or newer.
 
 ```bash
 npm install
 npm run typecheck
 npm test
 npm run build
+npm run dev
 ```
 
-`npm test` builds first and then runs Vitest. Public declarations and browser modules are emitted to `dist/`.
+Run a first program:
+
+```bash
+npm run cli -- run examples/bereshit.ivc
+```
+
+```ivritcode
+# Six operators in logical Unicode order
+בראשית
+```
+
+## Architecture
+
+```text
+apps/web          React + Vite IvritCode Observatory
+apps/cli          UTF-8 command-line interface
+packages/core     deterministic VM, state, traces, policy
+packages/unicode  Hebrew Unicode parser and source locations
+packages/analysis 231-Gates occurrences, frequencies, matrix
+packages/lexicon  normalized lexical classification and data
+netlify/functions optional validated Chavruta endpoint
+archive/          preserved prototypes, excluded from builds
+```
+
+The core has no DOM or browser dependency. The web and CLI consume the same published workspace API.
+
+## Machine model
+
+Registers `R[0]..R[21]` correspond to `א..ת`; `R[22]` is Aleph Olam. Every stored value is an integer in `Z₂₂`, `0..21`. Balanced interpretation maps `0..10` to themselves and `11..21` to `-11..-1`.
+
+Aleph Olam is a numeric register. Program names, step counts, hashes, permissions, timing metadata, strict mode, and halt state live separately in `ExecutionContext`.
+
+## The 22 operations
+
+| Letter | Name   | Technical v1.0 operation                       |
+| ------ | ------ | ---------------------------------------------- |
+| א      | Aleph  | Stable frame checkpoint                        |
+| ב      | Bet    | Add registers `0..10` into `11..21`            |
+| ג      | Gimel  | Multiply paired halves                         |
+| ד      | Dalet  | Compute opposing pair differences              |
+| ה      | Heh    | Reveal balanced signs; sum into Aleph Olam     |
+| ו      | Vav    | Exchange the two eleven-register halves        |
+| ז      | Zayin  | Increment visible registers                    |
+| ח      | Chet   | Decrement visible registers                    |
+| ט      | Tet    | Square visible registers; sum squares          |
+| י      | Yod    | Broadcast Aleph Olam into visible registers    |
+| כ      | Kaf    | Four-register circular window sum              |
+| ל      | Lamed  | Balanced global measure and recenter           |
+| מ      | Mem    | Three-register circular smoothing              |
+| נ      | Nun    | Balanced negation of all registers             |
+| ס      | Samekh | Rotate visible registers by Aleph Olam         |
+| ע      | Ayin   | Maximum shifted half-correlation               |
+| פ      | Peh    | Expose visible Aleph into Aleph Olam and edges |
+| צ      | Tsadi  | Compare halves and expose the dominant extreme |
+| ק      | Qof    | Mirror and incline by destination index        |
+| ר      | Resh   | Reseed from Aleph Olam using Bet as stride     |
+| ש      | Shin   | Circular quadratic mixing                      |
+| ת      | Tav    | Seal by rotating circular quartets             |
+
+`תּ` executes Tav's sealed checkpoint and explicitly halts. Plain Tav does not halt; natural end-of-input does.
+
+## Unicode, niqqud, and cantillation
+
+The parser uses NFD internally while retaining original source. It tracks line, column, code-point offset, UTF-16 offset, and raw marked instruction text. Final letters normalize as `ך→כ`, `ם→מ`, `ן→נ`, `ף→פ`, `ץ→צ` while retaining the original character.
+
+Sheva, Hiriq, Tzere, Segol, Patach, Qamatz, Holam, Qubutz, Dagesh, Shin Dot, and Sin Dot are recognized. Cantillation marks are named where known and retained in order. In permissive mode they are neutral; strict mode rejects semantics not implemented in v1.0. Cantillation grouping and control flow are reserved for later releases.
+
+## State initialization and base 22
+
+The API supports zero state, deterministic numeric seed, deterministic Hebrew seed, and explicit 23-value state. Utilities convert decimal and multi-digit base 22, Hebrew index notation, and balanced values. Hebrew rendering is an IvritCode notation layer—not traditional gematria.
+
+```ts
+import { executeProgram, makeZeroState, parseProgram } from "@ivritcode/core";
+
+const result = executeProgram(parseProgram("בראשית"), {
+  initialState: makeZeroState(),
+  trace: "full",
+});
+```
 
 ## CLI
 
 ```bash
-npx ivritcode run examples/bereshit.ivc
-npx ivritcode check examples/bereshit.ivc
-npx ivritcode trace examples/bereshit.ivc
-npx ivritcode disassemble examples/niqqud.ivc
-npx ivritcode gates examples/gates.ivc
-npx ivritcode repl
+ivritcode run examples/bereshit.ivc
+ivritcode check examples/bereshit.ivc
+ivritcode trace examples/bereshit.ivc --format text
+ivritcode trace examples/bereshit.ivc --format json
+ivritcode trace examples/bereshit.ivc --format ndjson
+ivritcode disassemble examples/niqqud-parsing.ivc
+ivritcode gates examples/gates.ivc
+ivritcode lexicon examples/bereshit.ivc
+ivritcode convert --decimal 231
+ivritcode repl
+ivritcode info
 ```
 
-Use `--max-steps N` to set the execution limit and `--strict-modifiers` to reject recognized modifiers without semantics. Failures return a nonzero exit code.
+The REPL supports `:help`, `:state`, `:reset`, `:seed`, `:trace`, `:gates`, `:strict`, and `:quit`.
 
-The textual debug assembler accepts canonical names such as `ALEPH BET GIMEL`; it assembles directly to the Hebrew-letter engine. Hebrew remains the primary language.
+## IvritCode Observatory
 
-## Browser
+The Observatory provides the Source Chamber, Register Observatory, Execution Trace, 231 Gates, lexicon lens, and optional Chavruta. It includes RTL editing without source reversal, step playback, uploads/downloads, initial-state modes, ring/grid/table registers, trace restoration, a 22×22 accessible matrix, dark/light/system/high-contrast themes, and reduced-motion support.
 
-Run `npm run build`, then `npm run dev`, and open `http://localhost:4173`. The editor preserves program order while displaying Hebrew right-to-left. The page uses `dist/web/app.js`, which imports the same parser, VM wrapper, gates, state, and lexicon modules exported by the library. No VM logic is embedded in DOM code.
+Start it with `npm run dev`. The production output is `apps/web/dist`.
 
-## 231 Gates
+## 231 Gates and lexicon
 
-`analyzeGates(letters)` counts repeated adjacent pairs. Defaults are directed and non-circular, so `א־ב` differs from `ב־א`, and the final letter does not connect to the first. Set `directed: false` or `circular: true` explicitly. Combining marks do not form gates because analysis receives normalized base letters.
+Gate analysis defaults to directed, non-circular pairs with repeated letters included, so `א־ב` differs from `ב־א`. Options enable undirected, circular, and repeat-filtered analysis. Results include every occurrence and a 22×22 frequency matrix.
 
-## Lexicon
+Lexicon analysis removes niqqud and normalizes final forms for comparison. It separates exact matches, prefixes, and raw candidates. Candidates are never presented as confirmed words.
 
-`matchLexiconWindows` produces located raw windows and labels each as `confirmed` only when its complete normalized text exists in the supplied lexicon. Missing lexicon data yields unknown windows rather than invented words. `loadLexicon` reports a typed loading error while the browser remains usable without the dataset.
+## IvritCode Chavruta
 
-## Chavruta
+The optional Chavruta is a programming and study partner. The browser remains fully functional without it. API keys stay in Netlify Functions.
 
-The Netlify function is a programming and study assistant. It never receives privileged execution access. Configure:
-
-```text
-OPENAI_API_KEY=...
-OPENAI_MODEL=gpt-4.1-mini
-CHAVRUTA_ALLOWED_ORIGINS=https://ivritcode.org,https://www.ivritcode.org,http://localhost:4173
-CHAVRUTA_TIMEOUT_MS=20000
+```bash
+cp .env.example .env
+# set OPENAI_API_KEY only for local Chavruta development
+npx netlify dev
 ```
 
-The key stays server-side. The shared response contract is:
+Requests are method-checked, length-limited, origin-controlled, rate-limit-ready, and timed out. Model output follows a JSON schema and generated programs pass through the real parser before being marked valid.
 
-```ts
-interface ChavrutaResponse {
-  program: string;
-  explanation: string;
-  gatesToWatch: string[];
-  warnings: string[];
-}
+## Security and policy
+
+The VM performs no filesystem, network, shell, dynamic evaluation, or arbitrary host operations. `ExecutionPolicy` is a conventional extension point for future privileged behavior; it is not machine conscience. No secret is required for builds, tests, the CLI, or the Observatory.
+
+## Testing and quality
+
+```bash
+npm run format:check
+npm run lint
+npm run typecheck
+npm test
+npm run build
 ```
 
-Requests are length-limited, CORS is allow-listed, `OPTIONS` is supported, model output uses a JSON schema, and generated programs are checked against the Hebrew grammar.
+CI runs reproducible installation, formatting, linting, type-checking, tests, and all workspace builds without secrets.
 
-## Layout
+## Deployment
 
-Core modules live under `src/`: alphabet and instruction metadata, parser, state, program execution, VM semantics, gates, lexicon, errors, CLI, and browser adapter. The former stack-machine, Poseidon-style, Ramchal, and React prototype files remain in the history and are excluded from the canonical build because they describe separate experimental systems.
+`netlify.toml` publishes `apps/web/dist`, bundles functions from `netlify/functions`, provides SPA routing, and sets security and immutable asset-cache headers. Configure production origins and OpenAI variables in Netlify, never in frontend source.
 
-## Roadmap
+## Status and roadmap
 
-The next milestone is IvritCode 1.1: specify and test selected niqqud transformations, design a non-speculative cantillation structure model, expand the curated lexicon, and introduce a versioned execution-policy interface. Any technical semantics should remain clearly separated from symbolic or theological interpretation.
+Implemented: all 22 operators, 23-register state, Unicode parsing, marks, explicit/natural halting, trace modes, limits, gates, lexicon, CLI, Observatory, Chavruta validation, CI, and Netlify configuration.
+
+Experimental: symbolic interpretation, Hebrew seeding, lexicon heuristics, and policy composition. Reserved: general niqqud transformations and cantillation structure/control flow.
+
+The recommended v1.1 milestone is a small, versioned niqqud semantics set, richer curated lexicon provenance, and browser user-flow automation.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) and the documents in [`docs/`](docs/). IvritCode is released under the repository's MIT license.
