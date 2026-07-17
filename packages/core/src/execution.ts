@@ -111,7 +111,7 @@ export function stepInstruction(
 ): IvritState {
   if (options.strictModifiers) {
     const unsupported = instruction.niqqud.find(
-      (mark) => !(instruction.letter === "ת" && mark.name === "Dagesh"),
+      (mark) => !(["י", "ת"] as string[]).includes(instruction.letter) || mark.name !== "Dagesh",
     );
     if (unsupported)
       throw new UnsupportedModifierError(
@@ -125,6 +125,12 @@ export function stepInstruction(
         instruction.source,
         "Use permissive mode to retain it as neutral.",
       );
+  }
+  if (instruction.letter === "י" && hasDagesh(instruction)) {
+    const unified = [...normalizeState(state)],
+      alephOlam = unified[22]!;
+    for (let index = 0; index < 22; index++) unified[index] = alephOlam;
+    return normalizeState(unified);
   }
   return applyLetter(state, instruction.letter);
 }
@@ -182,6 +188,9 @@ export function executeProgram(
             ? [`Cantillation: ${instruction.cantillation.map((m) => m.name).join(", ")}`]
             : []),
           ...(explicit ? ["Explicit halt after sealed Tav checkpoint"] : []),
+          ...(instruction.letter === "י" && hasDagesh(instruction)
+            ? ["Yod with Dagesh deliberately unified all visible registers"]
+            : []),
         ],
       });
     state = stateAfter;
