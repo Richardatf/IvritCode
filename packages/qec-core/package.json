@@ -1,0 +1,24 @@
+{
+  "name": "@qec/core",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "@qec/spec": "0.1.0",
+    "@qec/ivrit-compiler": "0.1.0",
+    "@qec/security": "0.1.0",
+    "@qec/provenance": "0.1.0",
+    "@qec/path-router": "0.1.0"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc -b --pretty false"
+  }
+}

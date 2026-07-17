@@ -6,6 +6,27 @@
 
 IvritCode is implemented computation. Quantum Etz Chaim is its broader conceptual research architecture—not a claim that this software runs on quantum hardware. Outputs do not prove mystical truths, raw strings are not automatically Hebrew words, and the Chavruta is not a religious authority.
 
+## IvritCode 0.1 and QEC vertical slice
+
+The repository contains an additive experimental compiler path for the constitutional `ivritcode-0.1` mapping. The canonical source is `spec/ivritcode-0.1.json`; the build synchronizes it into `@qec/spec`, so consumers never copy mappings manually.
+
+The first executable slice is `יִ $r1, 5`. It tokenizes the letter and combining mark separately, preserves original code points and source spans, parses `י` as `ADD` with hiriq integer mode, lowers to target-neutral QEC IR, and renders an allowlisted Python-AST description corresponding to `r1 = int(r1) + 5`.
+
+The generated Python is inspectable output; the hosted playground never executes it. Safe examples run through the metered local QEC IR interpreter after manifest policy and explicit Da'at verification. `web.read` and `grid.compute` are denied by default. Aleph Olam is reserved metadata and disabled in 0.1.
+
+### Architecture decisions
+
+- The existing letter-only Observatory VM remains available and unchanged; QEC 0.1 is an explicit compiler/runtime layer.
+- `@qec/spec` owns schemas and mappings; `@qec/ivrit-compiler` owns Unicode scanning, AST/IR, and Python emission.
+- `@qec/security`, `@qec/provenance`, and `@qec/core` enforce manifests, budgets, capability denial, verification, traces, replay, and sandbox results.
+- `@qec/path-router` defines exactly 32 typed channels.
+- `@qec/gates-231` commits all 231 deterministic unordered pairs and a checksum. Every Gate begins unassigned and non-executable.
+- The separate Kiah Aviyu author site remains untouched. The empty QuantumEtzChaim repository should consume versioned QEC packages in a later reviewed milestone, not be destructively merged.
+
+### Current limitations
+
+This milestone executes only ADD with hiriq/integer operands. The complete 22-opcode and cantillation state machine, grapheme-cursor editing, Gateway API, Infinite Wave graph, and QuantumEtzChaim visual application remain later milestones. Legacy opcodes can be inspected but are not executed by the QEC sandbox. The Python bridge constructs only allowlisted `ast` nodes and uses `ast.unparse`; it emits code but never executes it. The current deterministic FNV-1a content hash is an integrity checksum, not a cryptographic signature.
+
 ## Quick start
 
 Requires Node.js 22 or newer.
@@ -15,6 +36,7 @@ npm install
 npm run typecheck
 npm test
 npm run build
+python -m pytest packages/ivrit-compiler/python/test_bridge.py -q
 npm run dev
 ```
 

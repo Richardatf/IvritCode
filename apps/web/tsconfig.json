@@ -12,6 +12,11 @@
     "composite": true
   },
   "references": [
+    { "path": "../../packages/qec-spec" },
+    { "path": "../../packages/ivrit-compiler" },
+    { "path": "../../packages/path-router" },
+    { "path": "../../packages/gates-231" },
+    { "path": "../../packages/qec-core" },
     { "path": "../../packages/core" },
     { "path": "../../packages/analysis" },
     { "path": "../../packages/lexicon" }

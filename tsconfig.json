@@ -5,6 +5,13 @@
     { "path": "packages/core" },
     { "path": "packages/analysis" },
     { "path": "packages/lexicon" },
+    { "path": "packages/qec-spec" },
+    { "path": "packages/gates-231" },
+    { "path": "packages/path-router" },
+    { "path": "packages/qec-security" },
+    { "path": "packages/qec-provenance" },
+    { "path": "packages/ivrit-compiler" },
+    { "path": "packages/qec-core" },
     { "path": "apps/cli" },
     { "path": "apps/web" }
   ]

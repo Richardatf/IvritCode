@@ -18,7 +18,8 @@
   },
   "scripts": {
     "dev": "npm run dev -w @ivritcode/web",
-    "build": "npm run build --workspaces --if-present",
+    "sync:spec": "node scripts/sync-spec.mjs",
+    "build": "npm run sync:spec && npm run build --workspaces --if-present",
     "test": "npm run build && vitest run --coverage.enabled=false",
     "test:watch": "vitest",
     "typecheck": "tsc -b --pretty false",
