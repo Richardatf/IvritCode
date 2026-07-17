@@ -12,6 +12,7 @@ import {
   getInstructionDefinition,
   hebrewToBase22,
   makeZeroState,
+  makeAlphabetState,
   parseProgram,
   stateToLetterStream,
   stepInstruction,
@@ -30,6 +31,11 @@ describe("base-22 state", () => {
   it("creates deterministic seeds", () => {
     expect(createNumericSeed(42)).toEqual(createNumericSeed(42));
     expect(createHebrewSeed("בראשית")).toEqual(createHebrewSeed("בראשית"));
+  });
+  it("creates Alphabet State with a deterministic one-based program key", () => {
+    const state = makeAlphabetState("אבת");
+    expect(state.slice(0, 22)).toEqual(Array.from({ length: 22 }, (_, index) => index));
+    expect(state[22]).toBe(3);
   });
 });
 describe("22 operators", () => {
