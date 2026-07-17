@@ -1,0 +1,120 @@
+{
+  "$schema": "./ivritcode.schema.json",
+  "id": "ivritcode-0.1",
+  "status": "experimental",
+  "normalization": "NFC",
+  "disclaimer": "Engineering conventions only; not claims about sacred or traditional meaning.",
+  "alephOlam": { "register": 23, "reserved": true, "enabled": false, "userInvocable": false },
+  "opcodes": [
+    { "letter": "א", "codePoint": "U+05D0", "name": "LOAD" },
+    { "letter": "ב", "codePoint": "U+05D1", "name": "STORE" },
+    { "letter": "ג", "codePoint": "U+05D2", "name": "MOVE" },
+    { "letter": "ד", "codePoint": "U+05D3", "name": "PUSH" },
+    { "letter": "ה", "codePoint": "U+05D4", "name": "POP" },
+    { "letter": "ו", "codePoint": "U+05D5", "name": "CALL" },
+    { "letter": "ז", "codePoint": "U+05D6", "name": "RETURN" },
+    { "letter": "ח", "codePoint": "U+05D7", "name": "COMPARE" },
+    { "letter": "ט", "codePoint": "U+05D8", "name": "TEST" },
+    { "letter": "י", "codePoint": "U+05D9", "name": "ADD" },
+    { "letter": "כ", "codePoint": "U+05DB", "name": "SUBTRACT" },
+    { "letter": "ל", "codePoint": "U+05DC", "name": "MULTIPLY" },
+    { "letter": "מ", "codePoint": "U+05DE", "name": "DIVIDE" },
+    { "letter": "נ", "codePoint": "U+05E0", "name": "MODULO" },
+    { "letter": "ס", "codePoint": "U+05E1", "name": "AND" },
+    { "letter": "ע", "codePoint": "U+05E2", "name": "OR" },
+    { "letter": "פ", "codePoint": "U+05E4", "name": "XOR" },
+    { "letter": "צ", "codePoint": "U+05E6", "name": "SHIFT" },
+    { "letter": "ק", "codePoint": "U+05E7", "name": "JUMP" },
+    { "letter": "ר", "codePoint": "U+05E8", "name": "BRANCH" },
+    { "letter": "ש", "codePoint": "U+05E9", "name": "I/O" },
+    { "letter": "ת", "codePoint": "U+05EA", "name": "HALT" }
+  ],
+  "modifiers": [
+    {
+      "mark": "",
+      "codePoint": null,
+      "name": "direct",
+      "semantic": "register/direct",
+      "combiningClass": 0
+    },
+    {
+      "mark": "ְ",
+      "codePoint": "U+05B0",
+      "name": "sheva",
+      "semantic": "zero/init",
+      "combiningClass": 10
+    },
+    {
+      "mark": "ִ",
+      "codePoint": "U+05B4",
+      "name": "hiriq",
+      "semantic": "integer",
+      "combiningClass": 14
+    },
+    {
+      "mark": "ֵ",
+      "codePoint": "U+05B5",
+      "name": "tsere",
+      "semantic": "float",
+      "combiningClass": 15
+    },
+    {
+      "mark": "ֶ",
+      "codePoint": "U+05B6",
+      "name": "segol",
+      "semantic": "string",
+      "combiningClass": 16
+    },
+    {
+      "mark": "ַ",
+      "codePoint": "U+05B7",
+      "name": "patah",
+      "semantic": "literal",
+      "combiningClass": 17
+    },
+    {
+      "mark": "ָ",
+      "codePoint": "U+05B8",
+      "name": "qamats",
+      "semantic": "constant",
+      "combiningClass": 18
+    },
+    {
+      "mark": "ֹ",
+      "codePoint": "U+05B9",
+      "name": "holam",
+      "semantic": "address/callable",
+      "combiningClass": 19
+    },
+    {
+      "mark": "ֻ",
+      "codePoint": "U+05BB",
+      "name": "qubuts",
+      "semantic": "bytes/vector",
+      "combiningClass": 20
+    },
+    {
+      "mark": "ּ",
+      "codePoint": "U+05BC",
+      "name": "dagesh",
+      "semantic": "immediate/force",
+      "combiningClass": 21
+    },
+    {
+      "mark": "וּ",
+      "codePoint": "U+05D5 U+05BC",
+      "name": "shuruk",
+      "semantic": "stream",
+      "combiningClass": 21
+    }
+  ],
+  "controlMarks": [
+    { "mark": "׃", "codePoint": "U+05C3", "name": "sof pasuq", "semantic": "statement end" },
+    { "mark": "֑", "codePoint": "U+0591", "name": "etnahta", "semantic": "block boundary" },
+    { "mark": "֣", "codePoint": "U+05A3", "name": "munach", "semantic": "sequence" },
+    { "mark": "֥", "codePoint": "U+05A5", "name": "mercha", "semantic": "continuation" },
+    { "mark": "֖", "codePoint": "U+0596", "name": "tipcha", "semantic": "conditional guard" },
+    { "mark": "֛", "codePoint": "U+059B", "name": "tevir", "semantic": "exception edge" },
+    { "mark": "֡", "codePoint": "U+05A1", "name": "pazer", "semantic": "repeat/broadcast" }
+  ]
+}

@@ -3,7 +3,6 @@ import { analyzeGates } from "@ivritcode/analysis";
 import {
   ALEPH_OLAM_INDEX,
   HEBREW_LETTERS,
-  INSTRUCTION_DEFINITIONS,
   LETTER_NAMES,
   executeProgram,
   parseProgram,
@@ -14,21 +13,14 @@ import {
   type TraceMode,
 } from "@ivritcode/core";
 import { analyzeLexicon, loadLexicon, type LexiconData } from "@ivritcode/lexicon";
+import { compileIvrit } from "@qec/ivrit-compiler";
+import { runQEC, type QECRun } from "@qec/core";
+import { PATH_CHANNELS } from "@qec/path-router";
+import { GATE_PAIRS, GATE_REGISTRY_CHECKSUM } from "@qec/gates-231";
+import { IVRIT_LANGUAGE_SPEC, QEC_SCHEMA_VERSION } from "@qec/spec";
 import { downloadProgram, initialState, type InitialMode } from "./logic.js";
 const SAMPLE = "# IvritCode · בראשית\nב ר א ש י ת";
-const MODIFIERS = [
-  ["ְ", "Sheva"],
-  ["ִ", "Hiriq"],
-  ["ֵ", "Tzere"],
-  ["ֶ", "Segol"],
-  ["ַ", "Patach"],
-  ["ָ", "Qamatz"],
-  ["ֹ", "Holam"],
-  ["ֻ", "Qubutz"],
-  ["ּ", "Dagesh"],
-  ["ׁ", "Shin dot"],
-  ["ׂ", "Sin dot"],
-] as const;
+const QEC_SAMPLE = "יִ $r1, 5";
 type View = "ring" | "grid" | "table";
 type Theme = "auto" | "dark" | "light" | "contrast";
 interface ChavrutaResponse {
@@ -61,6 +53,10 @@ export function App() {
     [prompt, setPrompt] = useState(""),
     [chavruta, setChavruta] = useState<ChavrutaResponse>(),
     [assistantStatus, setAssistantStatus] = useState("Ready when you are."),
+    [qecSource, setQecSource] = useState(QEC_SAMPLE),
+    [qecInput, setQecInput] = useState("0"),
+    [qecRun, setQecRun] = useState<QECRun>(),
+    [qecError, setQecError] = useState(""),
     fileRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -129,6 +125,16 @@ export function App() {
     ),
     stream = stateToLetterStream(state),
     matches = useMemo(() => analyzeLexicon(stream, lexicon), [stream, lexicon]);
+  const qecCompilation = useMemo(() => compileIvrit(qecSource), [qecSource]);
+  const runQecExample = () => {
+    try {
+      setQecRun(runQEC(qecSource, { r1: Number(qecInput) || 0 }));
+      setQecError("");
+    } catch (reason) {
+      setQecRun(undefined);
+      setQecError(reason instanceof Error ? reason.message : String(reason));
+    }
+  };
   const reset = () => {
     setPlaying(false);
     setResult(undefined);
@@ -187,8 +193,8 @@ export function App() {
             <span lang="he">עבריתקוד</span> Observatory
           </h1>
           <p className="lede">
-            Twenty-two operators. Twenty-three registers. A precise instrument for exploring Hebrew
-            as executable symbolic structure.
+            A Unicode-native language where Hebrew letters are opcodes, niqqud are typed modifiers,
+            and execution remains transparent and verifiable.
           </p>
         </div>
         <div className="brand-mark" aria-hidden="true">
@@ -210,6 +216,7 @@ export function App() {
         <a href="#about">What it is</a>
         <a href="#operators">Operators</a>
         <a href="#modifiers">Modifiers</a>
+        <a href="#compiler">Compiler</a>
         <a href="#source">Try it</a>
         <a href="#gates">231 Gates</a>
       </nav>
@@ -219,9 +226,10 @@ export function App() {
             <p className="eyebrow">Start here</p>
             <h2>What is IvritCode?</h2>
             <p className="guide-lede">
-              IvritCode is an experimental symbolic programming language in which each Hebrew letter
-              is an instruction. A program runs in stored logical order and transforms a circular
-              state of 22 visible registers plus one global <i>Aleph Olam</i> register.
+              IvritCode is an experimental programming language in which each Hebrew letter selects
+              an opcode, niqqud selects a type or addressing mode, and selected cantillation marks
+              structure control flow. Version 0.1 reserves <i>Aleph Olam</i> as disabled metadata;
+              it cannot be invoked or silently affect execution.
             </p>
             <p>
               This is a deterministic computing system, not a translation tool, religious authority,
@@ -232,15 +240,15 @@ export function App() {
           <ol className="quick-start" aria-label="How to use IvritCode">
             <li>
               <b>Write</b>
-              <span>Enter Hebrew letters in the Source Chamber.</span>
+              <span>Enter pointed Hebrew source in the Compiler Lab.</span>
             </li>
             <li>
               <b>Run</b>
-              <span>Execute the program, or step through one letter at a time.</span>
+              <span>Compile to typed IR and inspect the generated Python representation.</span>
             </li>
             <li>
               <b>Observe</b>
-              <span>Watch registers, trace changes, and inspect adjacent-letter gates.</span>
+              <span>Run only verified IR and inspect policy, provenance, and trace stages.</span>
             </li>
           </ol>
           <div className="reference-block" id="operators">
@@ -249,26 +257,22 @@ export function App() {
                 <p className="eyebrow">Instruction menu</p>
                 <h2>22 operators</h2>
               </div>
-              <p>Select a letter to append it to the Source Chamber.</p>
+              <p>Select a letter to append it to the IvritCode 0.1 Compiler Lab.</p>
             </div>
             <div className="operator-menu">
-              {INSTRUCTION_DEFINITIONS.map((operator) => (
+              {IVRIT_LANGUAGE_SPEC.opcodes.map((operator) => (
                 <button
                   key={operator.letter}
                   type="button"
-                  onClick={() => setSource((current) => `${current.trimEnd()} ${operator.letter}`)}
+                  onClick={() =>
+                    setQecSource((current) => `${current.trimEnd()} ${operator.letter}`)
+                  }
                   title={`Add ${operator.name} to the source`}
                 >
                   <span lang="he">{operator.letter}</span>
                   <b>{operator.name}</b>
-                  <small>{operator.summary}</small>
-                  {(operator.readsAlephOlam || operator.writesAlephOlam) && (
-                    <em>
-                      {operator.readsAlephOlam && "reads A∞"}
-                      {operator.readsAlephOlam && operator.writesAlephOlam && " · "}
-                      {operator.writesAlephOlam && "writes A∞"}
-                    </em>
-                  )}
+                  <small>{operator.codePoint}</small>
+                  <em>IvritCode 0.1</em>
                 </button>
               ))}
             </div>
@@ -283,37 +287,217 @@ export function App() {
             </div>
             <div className="modifier-layout">
               <div className="modifier-menu">
-                {MODIFIERS.map(([mark, name]) => (
-                  <div key={name}>
-                    <span lang="he">◌{mark}</span>
-                    <b>{name}</b>
-                  </div>
-                ))}
+                {IVRIT_LANGUAGE_SPEC.modifiers
+                  .filter((item) => item.mark)
+                  .map((modifier) => (
+                    <div key={modifier.name}>
+                      <span lang="he">
+                        {modifier.name === "shuruk" ? modifier.mark : `◌${modifier.mark}`}
+                      </span>
+                      <b>{modifier.name}</b>
+                      <small>{modifier.semantic}</small>
+                    </div>
+                  ))}
               </div>
               <div className="modifier-notes">
                 <p>
-                  <b>Normal mode:</b> niqqud is preserved in the trace but computationally neutral.
+                  <b>No mark:</b> register/direct mode.
                 </p>
                 <p>
-                  <b>Tav + Dagesh (תּ):</b> explicitly halts execution.
+                  <b>Typed marks:</b> choose integer, float, string, literal, constant, address,
+                  bytes/vector, stream, or force semantics.
                 </p>
                 <p>
-                  <b>Strict modifiers:</b> reports unsupported computational modifiers.
+                  <b>Validation:</b> unknown, duplicate, reordered, or ambiguous marks are rejected.
                 </p>
                 <p>
-                  <b>Cantillation:</b> recognized and preserved, with no execution behavior in v1.0.
+                  <b>Cantillation:</b> the seven selected marks are structured parser tokens. Full
+                  control-flow lowering is a later v0.1 milestone.
                 </p>
               </div>
             </div>
           </div>
         </section>
+        <section className="panel qec-lab" id="compiler">
+          <div className="section-title">
+            <div>
+              <span>Q</span>
+              <h2>IvritCode 0.1 Compiler Lab</h2>
+            </div>
+            <p>{QEC_SCHEMA_VERSION} · local sandbox · no web or grid access</p>
+          </div>
+          <div className="qec-explainer">
+            <div>
+              <p className="eyebrow">One instruction, three semantic layers</p>
+              <h3>
+                <span lang="he">י</span> ADD + <span lang="he">◌ִ</span> integer mode + typed
+                operands
+              </h3>
+              <p>
+                Letters choose operations, niqqud choose value/addressing modes, and selected
+                cantillation marks structure control flow. These are engineering conventions.
+              </p>
+            </div>
+            <img
+              src="/art/semantic-layers.png"
+              alt="Diagram explaining letter, niqqud, and cantillation as three separate semantic layers"
+              loading="lazy"
+            />
+          </div>
+          <div className="qec-editor-grid">
+            <div>
+              <label htmlFor="qec-source">Pointed Hebrew source</label>
+              <textarea
+                id="qec-source"
+                dir="rtl"
+                lang="he"
+                value={qecSource}
+                onChange={(event) => setQecSource(event.target.value)}
+                spellCheck={false}
+              />
+              <label htmlFor="qec-r1">Initial r1 value</label>
+              <input
+                id="qec-r1"
+                inputMode="numeric"
+                value={qecInput}
+                onChange={(event) => setQecInput(event.target.value)}
+              />
+              <div className="toolbar">
+                <button className="primary" onClick={runQecExample}>
+                  Compile and run safe example
+                </button>
+                <button onClick={() => setQecSource(QEC_SAMPLE)}>Restore example</button>
+              </div>
+              {qecError && (
+                <div className="error" role="alert">
+                  {qecError}
+                </div>
+              )}
+              <div className="qec-output" aria-live="polite">
+                <small>Sandbox result</small>
+                <strong>r1 = {qecRun?.result.outputs.r1 ?? "—"}</strong>
+                <span>
+                  {qecRun
+                    ? `${qecRun.result.budgetUsed.steps} metered step`
+                    : "Run the verified IR to see a result."}
+                </span>
+              </div>
+            </div>
+            <figure>
+              <img
+                src="/art/compilation-pipeline.png"
+                alt="IvritCode compilation pipeline from Hebrew source through Unicode, Ivrit AST, allowlisted Python AST, and sandbox"
+                loading="lazy"
+              />
+              <figcaption>Source text is never executed directly.</figcaption>
+            </figure>
+          </div>
+          <div className="inspectors" aria-label="Compiler inspectors">
+            <details open>
+              <summary>Normalized code points</summary>
+              <pre>
+                {qecCompilation.program.tokens
+                  .map(
+                    (token) =>
+                      `${token.text || "↵"}  ${token.codePoints.join(" ")}  [${token.start},${token.end})`,
+                  )
+                  .join("\n")}
+              </pre>
+            </details>
+            <details>
+              <summary>Tokens</summary>
+              <pre>{JSON.stringify(qecCompilation.program.tokens, null, 2)}</pre>
+            </details>
+            <details>
+              <summary>IvritCode AST</summary>
+              <pre>{JSON.stringify(qecCompilation.program.instructions, null, 2)}</pre>
+            </details>
+            <details>
+              <summary>QEC IR</summary>
+              <pre>{JSON.stringify(qecCompilation.ir, null, 2)}</pre>
+            </details>
+            <details>
+              <summary>Python AST</summary>
+              <pre>{JSON.stringify(qecCompilation.pythonAst, null, 2)}</pre>
+            </details>
+            <details open>
+              <summary>Readable Python</summary>
+              <pre>{qecCompilation.pythonSource}</pre>
+            </details>
+          </div>
+          <div className="qec-runtime-grid">
+            <section>
+              <h3>Auditable QEC trace</h3>
+              {qecRun ? (
+                <ol>
+                  {qecRun.trace.events.map((event) => (
+                    <li key={event.sequence}>
+                      <b>{event.stage}</b>
+                      <span>{event.status}</span>
+                      <small>{event.message}</small>
+                    </li>
+                  ))}
+                </ol>
+              ) : (
+                <p>
+                  Run the example to pass through Keter, Binah, Da&apos;at, Gevurah, Hod, Yesod, and
+                  Malkhut.
+                </p>
+              )}
+            </section>
+            <section>
+              <h3>32 Paths</h3>
+              <p>{PATH_CHANNELS.length} typed channels: 22 opcode + 10 state transition.</p>
+              <div className="path-chips">
+                {PATH_CHANNELS.map((path) => (
+                  <span key={path.id}>{path.label}</span>
+                ))}
+              </div>
+            </section>
+            <section>
+              <h3>231 Gates</h3>
+              <p>
+                {GATE_PAIRS.length} complete unordered pairs · checksum{" "}
+                <code>{GATE_REGISTRY_CHECKSUM}</code>.
+              </p>
+              <p>
+                Every Gate is <b>unassigned</b> in v0.1 and cannot execute until deliberately
+                reviewed.
+              </p>
+            </section>
+            <section>
+              <h3>Capabilities & budget</h3>
+              <ul>
+                <li>sandbox.execute: local IR only</li>
+                <li>web.read: denied</li>
+                <li>grid.compute: denied</li>
+                <li>max steps: 1,000</li>
+                <li>Aleph Olam: reserved and disabled</li>
+              </ul>
+            </section>
+          </div>
+          <figure className="wave-architecture">
+            <img
+              src="/art/infinite-wave-architecture.png"
+              alt="Infinite Wave architecture diagram separating the local VM, permissioned web and grid, provenance, privacy, and human authority"
+              loading="lazy"
+            />
+            <figcaption>
+              Computational metaphor only; no claim of physical quantum behavior.
+            </figcaption>
+          </figure>
+          <p className="spec-note">
+            Canonical mapping: <b>{IVRIT_LANGUAGE_SPEC.id}</b>. Deep links and examples load source
+            only; they never auto-execute.
+          </p>
+        </section>
         <section className="chamber panel" id="source">
           <div className="section-title">
             <div>
               <span>01</span>
-              <h2>Source Chamber</h2>
+              <h2>Legacy Source Chamber</h2>
             </div>
-            <p>Logical order remains intact. The editor alone displays right-to-left.</p>
+            <p>Original symbolic VM preserved for compatibility; separate from IvritCode 0.1.</p>
           </div>
           <div className="editor-wrap">
             <div className="line-numbers" aria-hidden="true">
@@ -390,7 +574,7 @@ export function App() {
           <div className="section-title">
             <div>
               <span>02</span>
-              <h2>Register Observatory</h2>
+              <h2>Legacy Register Observatory</h2>
             </div>
             <div className="segmented" aria-label="Register view">
               {(["ring", "grid", "table"] as View[]).map((item) => (

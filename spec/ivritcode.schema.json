@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ivritcode.org/spec/ivritcode.schema.json",
+  "type": "object",
+  "required": ["id", "normalization", "opcodes", "modifiers", "controlMarks", "alephOlam"],
+  "properties": {
+    "id": { "const": "ivritcode-0.1" },
+    "normalization": { "const": "NFC" },
+    "opcodes": { "type": "array", "minItems": 22, "maxItems": 22, "uniqueItems": true },
+    "modifiers": { "type": "array", "minItems": 10 },
+    "controlMarks": { "type": "array", "minItems": 7, "maxItems": 7 },
+    "alephOlam": { "type": "object", "required": ["reserved", "enabled", "userInvocable"] }
+  },
+  "additionalProperties": true
+}

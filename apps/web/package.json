@@ -9,6 +9,11 @@
     "typecheck": "tsc -b --pretty false"
   },
   "dependencies": {
+    "@qec/core": "0.1.0",
+    "@qec/ivrit-compiler": "0.1.0",
+    "@qec/path-router": "0.1.0",
+    "@qec/gates-231": "0.1.0",
+    "@qec/spec": "0.1.0",
     "@ivritcode/analysis": "1.0.0",
     "@ivritcode/core": "1.0.0",
     "@ivritcode/lexicon": "1.0.0",

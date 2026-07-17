@@ -416,13 +416,19 @@ main {
   gap: 0.5rem;
 }
 .modifier-menu div {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr;
   align-items: center;
   gap: 0.6rem;
   padding: 0.75rem;
   border: 1px solid var(--line);
   border-radius: 10px;
   background: var(--surface);
+}
+.modifier-menu small {
+  grid-column: 2;
+  color: var(--muted);
+  font-size: 0.68rem;
 }
 .modifier-menu span {
   min-width: 1.8rem;
@@ -435,6 +441,177 @@ main {
 .modifier-notes {
   padding: 0.3rem 1rem;
   border-left: 2px solid var(--gold);
+}
+.qec-lab {
+  grid-column: 1/-1;
+  scroll-margin-top: 5rem;
+}
+.qec-explainer,
+.qec-editor-grid,
+.qec-runtime-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+.qec-explainer {
+  align-items: center;
+  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+.qec-explainer h3 {
+  font-size: clamp(1.2rem, 2.4vw, 2rem);
+  margin: 0.4rem 0;
+}
+.qec-explainer h3 span {
+  color: var(--gold-bright);
+  font-family: var(--hebrew);
+}
+.qec-explainer p,
+.qec-runtime-grid p,
+.spec-note {
+  color: var(--muted);
+  line-height: 1.6;
+}
+.qec-explainer img,
+.qec-editor-grid figure img,
+.wave-architecture img {
+  width: 100%;
+  border-radius: 10px;
+  display: block;
+}
+.qec-editor-grid > div,
+.qec-editor-grid figure,
+.qec-runtime-grid > section {
+  margin: 0;
+  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  min-width: 0;
+}
+.qec-editor-grid label {
+  display: block;
+  color: var(--muted);
+  font-size: 0.78rem;
+  margin: 0 0 0.4rem;
+}
+.qec-editor-grid textarea {
+  width: 100%;
+  min-height: 130px;
+  resize: vertical;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel-2);
+  color: var(--text);
+  font: 1.5rem var(--hebrew);
+  unicode-bidi: plaintext;
+}
+.qec-editor-grid input {
+  width: 100%;
+  padding: 0.65rem;
+  margin-bottom: 0.8rem;
+}
+.qec-editor-grid figcaption,
+.wave-architecture figcaption {
+  color: var(--muted);
+  font-size: 0.72rem;
+  margin-top: 0.5rem;
+}
+.qec-output {
+  display: grid;
+  gap: 0.2rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  border-left: 3px solid var(--gold);
+  background: var(--panel-2);
+}
+.qec-output small,
+.qec-output span {
+  color: var(--muted);
+}
+.qec-output strong {
+  font:
+    1.4rem ui-monospace,
+    monospace;
+  color: var(--gold-bright);
+}
+.inspectors {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+}
+.inspectors details {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+}
+.inspectors summary {
+  cursor: pointer;
+  padding: 0.8rem;
+  font-weight: 700;
+}
+.inspectors pre {
+  overflow: auto;
+  max-height: 280px;
+  margin: 0;
+  padding: 1rem;
+  border-top: 1px solid var(--line);
+  color: var(--indigo);
+  font:
+    0.76rem/1.55 ui-monospace,
+    "Cascadia Code",
+    monospace;
+  white-space: pre-wrap;
+}
+.qec-runtime-grid > section h3 {
+  margin-top: 0;
+}
+.qec-runtime-grid ol,
+.qec-runtime-grid ul {
+  padding-left: 1.25rem;
+}
+.qec-runtime-grid li {
+  margin-bottom: 0.6rem;
+}
+.qec-runtime-grid li span {
+  margin-left: 0.5rem;
+  color: var(--gold);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+.qec-runtime-grid li small {
+  display: block;
+  color: var(--muted);
+}
+.path-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  max-height: 190px;
+  overflow: auto;
+}
+.path-chips span {
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  color: var(--muted);
+  font-size: 0.68rem;
+}
+.wave-architecture {
+  margin: 0;
+  padding: 1rem;
+  background: #061725;
+  border-radius: 14px;
+}
+.wave-architecture img {
+  max-height: 560px;
+  object-fit: contain;
 }
 .chamber,
 .observatory {
@@ -907,6 +1084,11 @@ footer {
   .modifier-layout {
     grid-template-columns: 1fr;
   }
+  .qec-explainer,
+  .qec-editor-grid,
+  .qec-runtime-grid {
+    grid-template-columns: 1fr;
+  }
   .registers.ring {
     transform: scale(0.72);
     margin-block: -2rem;
@@ -950,6 +1132,9 @@ footer {
   }
   .operator-menu,
   .modifier-menu {
+    grid-template-columns: 1fr;
+  }
+  .inspectors {
     grid-template-columns: 1fr;
   }
   .quick-start li {

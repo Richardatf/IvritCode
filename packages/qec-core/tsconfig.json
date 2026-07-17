@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": { "rootDir": "src", "outDir": "dist" },
+  "references": [
+    { "path": "../qec-spec" },
+    { "path": "../ivrit-compiler" },
+    { "path": "../qec-security" },
+    { "path": "../qec-provenance" },
+    { "path": "../path-router" }
+  ],
+  "include": ["src/**/*.ts"]
+}
