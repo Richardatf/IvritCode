@@ -29,6 +29,14 @@ export function createState(values: readonly number[]): IvritState {
 export function makeZeroState(): IvritState {
   return normalizeState(new Array(REGISTER_COUNT).fill(0));
 }
+export function makeAlphabetState(programLetters: string = ""): IvritState {
+  const values = Array.from({ length: REGISTER_COUNT }, (_, index) => index);
+  values[ALEPH_OLAM_INDEX] = [...programLetters.normalize("NFD")].reduce((sum, character) => {
+    const letter = canonicalLetter(character);
+    return letter ? sum + HEBREW_LETTERS.indexOf(letter) + 1 : sum;
+  }, 0);
+  return normalizeState(values);
+}
 export function createNumericSeed(seed: number): IvritState {
   if (!Number.isSafeInteger(seed))
     throw new InvalidStateError("Numeric seed must be a safe integer.");

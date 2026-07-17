@@ -1,4 +1,5 @@
 import { HEBREW_LETTERS, type HebrewLetter, type IvritProgram } from "@ivritcode/unicode";
+export * from "./archetypes.js";
 export interface GateOccurrence {
   readonly left: HebrewLetter;
   readonly right: HebrewLetter;

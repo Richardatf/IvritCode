@@ -1,11 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { analyzeGates } from "@ivritcode/analysis";
+import {
+  LETTER_ARCHETYPES,
+  analyzeConstellation,
+  analyzeGates,
+  type PatternShape,
+} from "@ivritcode/analysis";
 import {
   ALEPH_OLAM_INDEX,
   HEBREW_LETTERS,
   LETTER_NAMES,
-  createState,
   executeProgram,
+  makeAlphabetState,
   parseProgram,
   stateToLetterStream,
   toBalanced,
@@ -69,6 +74,16 @@ const PUBLIC_OPERATORS = [
   ["ת", "Seal", "Preserves the completed state as a checkpoint."],
 ] as const;
 const publicOperator = (letter: string) => PUBLIC_OPERATORS.find(([item]) => item === letter);
+const PATTERN_NAMES: Record<PatternShape, string> = {
+  FULL_SPECTRUM: "The Full Spectrum",
+  CHORUS: "The Chorus",
+  MIRROR: "The Mirror",
+  RETURN: "The Return",
+  SPIRAL: "The Spiral",
+  FLAME: "The Flame",
+  STILL_POINT: "The Still Point",
+  OPEN_FIELD: "The Open Field",
+};
 type View = "ring" | "grid" | "table";
 type Theme = "auto" | "dark" | "light" | "contrast";
 interface ChavrutaResponse {
@@ -178,10 +193,14 @@ export function App() {
     stream = stateToLetterStream(state),
     matches = useMemo(() => analyzeLexicon(stream, lexicon), [stream, lexicon]);
   const qecCompilation = useMemo(() => compileIvrit(qecSource), [qecSource]);
+  const constellation = useMemo(
+    () => (demoResult ? analyzeConstellation(demoResult) : undefined),
+    [demoResult],
+  );
   const runDemo = () => {
-    const seeded = Array(23).fill(0);
-    seeded[ALEPH_OLAM_INDEX] = 9;
-    setDemoResult(executeProgram(demoSource, { initialState: createState(seeded), trace: "full" }));
+    setDemoResult(
+      executeProgram(demoSource, { initialState: makeAlphabetState(demoSource), trace: "full" }),
+    );
     setShowDemoSteps(false);
   };
   const insertDemoText = (text: string) => {
@@ -319,7 +338,7 @@ export function App() {
         <section className="panel landing-video" aria-labelledby="landing-video-title">
           <div className="landing-video-copy">
             <p className="eyebrow">Meet IvritCode</p>
-            <h2 id="landing-video-title">See the idea in motion</h2>
+            <h2 id="landing-video-title">Elijah Blaze Has A Message</h2>
             <p>
               Watch this short introduction, then try a Hebrew letter sequence in the interactive
               playground below.
@@ -345,6 +364,22 @@ export function App() {
               Start with a word, phrase, or any sequence. IvritCode reads each letter from beginning
               to end.
             </p>
+            <ol className="resonance-story" aria-label="The three phases of IvritCode Resonance">
+              <li>
+                <b>1. The Alphabet Awakens</b>
+                <span>The machine begins with the Hebrew alphabet in its natural order.</span>
+              </li>
+              <li>
+                <b>2. The Word Walks</b>
+                <span>Each letter in your word acts upon the entire alphabet.</span>
+              </li>
+              <li>
+                <b>3. The Constellation Forms</b>
+                <span>
+                  Final values become Hebrew letters—a new constellation of relationships.
+                </span>
+              </li>
+            </ol>
             <textarea
               ref={demoEditorRef}
               dir="rtl"
@@ -370,7 +405,7 @@ export function App() {
           </div>
           <div className="friendly-result" aria-live="polite">
             <p className="eyebrow">What happened?</p>
-            {!demoResult ? (
+            {!demoResult || !constellation ? (
               <>
                 <h3>Your pattern is ready to explore.</h3>
                 <p>
@@ -379,54 +414,144 @@ export function App() {
               </>
             ) : (
               <>
-                <h3>Your program used {demoResult.program.instructions.length} Hebrew letters.</h3>
-                <p>Each letter changed or preserved the machine&apos;s pattern in sequence.</p>
-                {new Set(demoResult.finalState.slice(0, 22)).size === 22 ? (
-                  <p className="pattern-callout">
-                    <b>A complete spectrum appeared:</b> every base-22 value appears once.
-                  </p>
-                ) : (
-                  <p className="pattern-callout">
-                    <b>A new pattern appeared.</b> The visible letter positions now contain{" "}
-                    {new Set(demoResult.finalState.slice(0, 22)).size} distinct values.
-                  </p>
-                )}
-                {demoResult.program.instructions.some((item) => item.letter === "י") && (
-                  <p>
-                    Yod used Aleph Olam as a starting point and unfolded its influence across all
-                    twenty-two letter positions. It created a related pattern rather than copying
-                    one value everywhere.
-                  </p>
-                )}
+                <h3>The constellation has formed.</h3>
+                <p className="pattern-callout">{constellation.summary}</p>
+                <div className="reading-facts">
+                  <article>
+                    <small>Hidden Key</small>
+                    <strong lang="he">{constellation.hiddenKey}</strong>
+                    <span>
+                      {
+                        LETTER_ARCHETYPES[HEBREW_KEYBOARD_LETTERS.indexOf(constellation.hiddenKey)]
+                          ?.title
+                      }
+                    </span>
+                  </article>
+                  <article>
+                    <small>Pattern Shape</small>
+                    <strong>{PATTERN_NAMES[constellation.patternShape]}</strong>
+                    <span>{constellation.distinctValueCount} distinct letters</span>
+                  </article>
+                  <article>
+                    <small>Strongest Chorus</small>
+                    <strong lang="he">{constellation.dominantLetters.join(" · ") || "—"}</strong>
+                    <span>Most repeated destinations</span>
+                  </article>
+                  <article>
+                    <small>Returning Letters</small>
+                    <strong lang="he">{constellation.returningLetters.join(" · ") || "—"}</strong>
+                    <span>{constellation.returningLetters.length} self-returns</span>
+                  </article>
+                  <article>
+                    <small>Gates Opened</small>
+                    <strong lang="he">{constellation.strongestGates.join(" · ") || "—"}</strong>
+                    <span>From the program&apos;s letter pairs</span>
+                  </article>
+                </div>
                 <section className="demo-register-output" aria-labelledby="demo-register-title">
                   <div className="register-output-heading">
                     <div>
-                      <p className="eyebrow">Output registers</p>
-                      <h4 id="demo-register-title">The resulting 22-letter pattern</h4>
+                      <p className="eyebrow">IvritCode Resonance</p>
+                      <h4 id="demo-register-title">The Letter Constellation</h4>
                     </div>
                     <output aria-label="Aleph Olam output value">
                       <span lang="he">א∞</span>
-                      <small>Aleph Olam</small>
-                      <strong>{demoResult.finalState[ALEPH_OLAM_INDEX]}</strong>
+                      <small>The Hidden Key</small>
+                      <strong lang="he">{constellation.hiddenKey}</strong>
                     </output>
                   </div>
-                  <div className="demo-register-grid" dir="rtl">
-                    {HEBREW_KEYBOARD_LETTERS.map((letter, index) => (
-                      <output
-                        key={letter}
-                        className="demo-register"
-                        aria-label={`${LETTER_NAMES[index]} register: ${demoResult.finalState[index]}`}
+                  <div
+                    className="constellation-orbit"
+                    aria-label="Circular 22-letter constellation"
+                  >
+                    <svg viewBox="0 0 600 600" aria-hidden="true">
+                      <circle cx="300" cy="300" r="236" />
+                      {constellation.registers.map((register, index) => {
+                        const targetIndex = HEBREW_KEYBOARD_LETTERS.indexOf(register.target),
+                          sourceAngle = (index / 22) * Math.PI * 2 - Math.PI / 2,
+                          targetAngle = (targetIndex / 22) * Math.PI * 2 - Math.PI / 2,
+                          radius = 236;
+                        return (
+                          <line
+                            key={register.source}
+                            className={register.selfReturn ? "return-line" : "relation-line"}
+                            x1={300 + Math.cos(sourceAngle) * radius}
+                            y1={300 + Math.sin(sourceAngle) * radius}
+                            x2={300 + Math.cos(targetAngle) * radius}
+                            y2={300 + Math.sin(targetAngle) * radius}
+                          />
+                        );
+                      })}
+                    </svg>
+                    <div className="constellation-key">
+                      <span lang="he">{constellation.hiddenKey}</span>
+                      <small>Hidden Key</small>
+                    </div>
+                    {constellation.registers.map((register, index) => (
+                      <div
+                        className={`constellation-node ${register.selfReturn ? "self-return" : ""}`}
+                        style={{ "--node-index": index } as React.CSSProperties}
+                        key={register.source}
+                        title={register.phrase}
                       >
-                        <span lang="he">{letter}</span>
-                        <small dir="ltr">R{index}</small>
-                        <strong>{demoResult.finalState[index]}</strong>
+                        <span lang="he">{register.source}</span>
+                        <b lang="he">{register.target}</b>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="demo-register-grid" dir="rtl">
+                    {constellation.registers.map((register, index) => (
+                      <output
+                        key={register.source}
+                        className={`demo-register ${register.selfReturn ? "self-return" : "changed"}`}
+                        aria-label={`${LETTER_NAMES[index]} becomes ${register.target}. ${register.phrase}`}
+                      >
+                        <span lang="he">
+                          {register.source} → {register.target}
+                        </span>
+                        <strong>{register.selfReturn ? "Returns" : "Changes"}</strong>
+                        <small>{register.phrase}</small>
                       </output>
                     ))}
                   </div>
                 </section>
-                <button onClick={() => setShowDemoSteps((current) => !current)}>
-                  {showDemoSteps ? "Hide each step" : "See each step"}
-                </button>
+                <p className="honesty-note">
+                  This is a symbolic reading produced from IvritCode&apos;s mathematical
+                  relationships. It is an invitation to reflection, not prophecy or religious
+                  authority.
+                </p>
+                <div className="toolbar resonance-actions">
+                  <button className="primary">Read the Constellation</button>
+                  <button onClick={() => setShowDemoSteps((current) => !current)}>
+                    {showDemoSteps ? "Hide the Journey" : "Watch the Journey"}
+                  </button>
+                  <details className="resonance-math">
+                    <summary>See the Mathematics</summary>
+                    <pre>
+                      {JSON.stringify(
+                        {
+                          initialState: makeAlphabetState(demoSource),
+                          finalState: demoResult.finalState,
+                          hiddenKeyValue: demoResult.finalState[ALEPH_OLAM_INDEX],
+                          symmetryScore: constellation.symmetryScore,
+                          rotationScore: constellation.rotationScore,
+                          dispersionScore: constellation.dispersionScore,
+                        },
+                        null,
+                        2,
+                      )}
+                    </pre>
+                  </details>
+                  <button
+                    onClick={() => {
+                      setDemoSource("");
+                      setDemoResult(undefined);
+                      demoEditorRef.current?.focus();
+                    }}
+                  >
+                    Try Another Word
+                  </button>
+                </div>
               </>
             )}
           </div>
