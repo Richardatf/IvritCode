@@ -14,11 +14,11 @@ const summaries = [
   "Pairwise multiplication",
   "Opposing differences",
   "Balanced sign revelation",
-  "Join and exchange halves",
+  "Pairwise bitwise conjunction",
   "Ascend visible registers",
   "Descend visible registers",
   "Nonlinear square",
-  "Seed from Aleph Olam",
+  "Emanate Aleph Olam as a phased spectrum",
   "Four-register circular window",
   "Global measure and recenter",
   "Circular smoothing",
@@ -30,7 +30,7 @@ const summaries = [
   "Mirror and incline",
   "Reseed with Bet stride",
   "Nonlinear circular mixing",
-  "Seal circular quartets",
+  "Seal the present state",
 ];
 const reads = new Set(["י", "נ", "ס", "ר"]),
   writes = new Set(["ה", "ט", "ל", "מ", "נ", "ע", "פ", "צ", "ש"]);
@@ -80,10 +80,7 @@ export function applyLetter(state: IvritState, letter: HebrewLetter): IvritState
       break;
     }
     case "ו":
-      for (let i = 0; i < 11; i++) {
-        next[i] = old[i + 11]!;
-        next[i + 11] = old[i]!;
-      }
+      for (let i = 0; i < 11; i++) next[i + 11] = mod22(old[i]! & old[i + 11]!);
       break;
     case "ז":
       for (let i = 0; i < 22; i++) next[i] = mod22(old[i]! + 1);
@@ -102,7 +99,10 @@ export function applyLetter(state: IvritState, letter: HebrewLetter): IvritState
       break;
     }
     case "י":
-      for (let i = 0; i < 22; i++) next[i] = A;
+      for (let i = 0; i < 22; i++) {
+        const sourceIndex = (i - A + 22) % 22;
+        next[i] = mod22(old[sourceIndex]! + A + i);
+      }
       break;
     case "כ":
       for (let i = 0; i < 22; i++)
@@ -178,16 +178,6 @@ export function applyLetter(state: IvritState, letter: HebrewLetter): IvritState
       break;
     }
     case "ת":
-      for (let base = 0; base < 22; base += 4) {
-        const a = base % 22,
-          b = (base + 1) % 22,
-          c = (base + 2) % 22,
-          d = (base + 3) % 22;
-        next[a] = old[c]!;
-        next[b] = old[d]!;
-        next[c] = old[a]!;
-        next[d] = old[b]!;
-      }
       break;
   }
   return normalizeState(next);

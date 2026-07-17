@@ -81,11 +81,11 @@ Aleph Olam is a numeric register. Program names, step counts, hashes, permission
 | ג      | Gimel  | Multiply paired halves                         |
 | ד      | Dalet  | Compute opposing pair differences              |
 | ה      | Heh    | Reveal balanced signs; sum into Aleph Olam     |
-| ו      | Vav    | Exchange the two eleven-register halves        |
+| ו      | Vav    | Pairwise bitwise AND                           |
 | ז      | Zayin  | Increment visible registers                    |
 | ח      | Chet   | Decrement visible registers                    |
 | ט      | Tet    | Square visible registers; sum squares          |
-| י      | Yod    | Broadcast Aleph Olam into visible registers    |
+| י      | Yod    | Emanate Aleph Olam as a phased spectrum        |
 | כ      | Kaf    | Four-register circular window sum              |
 | ל      | Lamed  | Balanced global measure and recenter           |
 | מ      | Mem    | Three-register circular smoothing              |
@@ -97,9 +97,9 @@ Aleph Olam is a numeric register. Program names, step counts, hashes, permission
 | ק      | Qof    | Mirror and incline by destination index        |
 | ר      | Resh   | Reseed from Aleph Olam using Bet as stride     |
 | ש      | Shin   | Circular quadratic mixing                      |
-| ת      | Tav    | Seal by rotating circular quartets             |
+| ת      | Tav    | Seal the present state without changing it     |
 
-`תּ` executes Tav's sealed checkpoint and explicitly halts. Plain Tav does not halt; natural end-of-input does.
+`יּ` deliberately unifies all twenty-two visible registers to Aleph Olam. Plain Yod instead preserves diversity by rotating the visible state and adding a position-based phase. `תּ` seals and explicitly halts; plain Tav records a no-op checkpoint and continues. Natural end-of-input also halts.
 
 ## Unicode, niqqud, and cantillation
 
