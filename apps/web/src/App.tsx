@@ -507,7 +507,7 @@ export function App() {
                         aria-label={`${LETTER_NAMES[index]} becomes ${register.target}. ${register.phrase}`}
                       >
                         <span lang="he">
-                          {register.source} → {register.target}
+                          {register.source} ← {register.target}
                         </span>
                         <strong>{register.selfReturn ? "Returns" : "Changes"}</strong>
                         <small>{register.phrase}</small>
