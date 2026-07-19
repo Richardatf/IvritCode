@@ -62,6 +62,7 @@ export const NIQQUD_NAMES: Readonly<Record<string, string>> = {
   "\u05c2": "Sin Dot",
 };
 export const CANTILLATION_NAMES: Readonly<Record<string, string>> = {
+  "\u05c3": "Sof pasuq",
   "\u0591": "Etnahta",
   "\u0592": "Segol accent",
   "\u0593": "Shalshelet",
@@ -212,9 +213,10 @@ export function parseProgram(source: string, options: ParseOptions = {}): IvritP
       });
       attachable = true;
     } else if (
-      /\p{M}/u.test(character) &&
-      character.codePointAt(0)! >= 0x0591 &&
-      character.codePointAt(0)! <= 0x05c7
+      (/\p{M}/u.test(character) &&
+        character.codePointAt(0)! >= 0x0591 &&
+        character.codePointAt(0)! <= 0x05c7) ||
+      character === "\u05c3"
     ) {
       const previous = instructions.at(-1);
       if (!previous || !attachable) {

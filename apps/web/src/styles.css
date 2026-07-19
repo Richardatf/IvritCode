@@ -491,6 +491,15 @@ main {
   padding-top: 1rem;
   border-top: 1px solid var(--line);
 }
+.keyboard-error {
+  color: #b23a2b;
+  font-weight: 700;
+}
+.journey-progress {
+  align-self: center;
+  padding: 0.65rem;
+  color: var(--muted);
+}
 .demo-register-output {
   margin: 1.2rem 0;
   padding: 1rem;
@@ -593,6 +602,10 @@ main {
   border-radius: 50%;
   background: var(--surface);
   transform: rotate(var(--angle)) translateY(-240px) rotate(calc(-1 * var(--angle)));
+  transition:
+    border-color 0.35s ease,
+    box-shadow 0.35s ease,
+    color 0.35s ease;
 }
 .constellation-node span {
   font: 0.72rem var(--hebrew);
@@ -705,6 +718,10 @@ main {
   border-radius: 12px;
   background: var(--surface);
 }
+.simple-steps article.current {
+  border-color: var(--gold);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--gold) 22%, transparent);
+}
 .simple-steps article > span {
   font: 2.5rem var(--hebrew);
   color: var(--gold-bright);
@@ -743,17 +760,59 @@ main {
   line-height: 1.65;
 }
 .friendly-gates {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.55rem;
-  margin: 1rem 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
+  gap: 0.7rem;
+  margin: 1.15rem 0;
 }
-.friendly-gates span {
-  padding: 0.6rem 0.85rem;
+.friendly-gate {
+  min-width: 0;
+  margin: 0;
+  padding: 0.75rem 0.65rem 0.6rem;
   border: 1px solid var(--gold);
-  border-radius: 99px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--gold) 5%, var(--surface));
+  text-align: center;
+}
+.friendly-gate__pair {
+  display: grid;
+  grid-template-columns: 2.25rem minmax(1.25rem, 1fr) 2.25rem;
+  align-items: center;
+}
+.friendly-gate__pair span {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--gold) 68%, var(--line));
+  border-radius: 50%;
+  background: var(--surface);
   color: var(--gold-bright);
-  font: 1.2rem var(--hebrew);
+  font: 1.3rem var(--hebrew);
+}
+.friendly-gate__pair i {
+  position: relative;
+  height: 1px;
+  background: var(--gold);
+}
+.friendly-gate__pair i::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0.38rem;
+  height: 0.38rem;
+  border: 1px solid var(--gold);
+  background: var(--surface);
+  content: "";
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+.friendly-gate figcaption {
+  margin-top: 0.45rem;
+  color: var(--muted);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
 }
 .advanced-qec,
 .advanced-details {

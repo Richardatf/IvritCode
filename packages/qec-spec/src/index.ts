@@ -2,6 +2,7 @@ import languageSpec from "./ivritcode-0.1.json" with { type: "json" };
 export const IVRIT_LANGUAGE_SPEC = languageSpec;
 export const QEC_SCHEMA_VERSION = "qec-0.1" as const;
 export const IVRIT_SPEC_VERSION = "ivritcode-1.0" as const;
+export const IVRIT_EXCHANGE_VERSION = "ivritcode-exchange-0.1" as const;
 export const HEBREW_LETTERS = [
   "א",
   "ב",
@@ -27,6 +28,39 @@ export const HEBREW_LETTERS = [
   "ת",
 ] as const;
 export type HebrewLetter = (typeof HEBREW_LETTERS)[number];
+export interface IvritCodeExchange {
+  readonly schemaVersion: typeof IVRIT_EXCHANGE_VERSION;
+  readonly source: string;
+  readonly sourceHash: string;
+  readonly initialState: readonly number[];
+  readonly finalState: readonly number[];
+  readonly hiddenKey: HebrewLetter;
+  readonly patternShape: string;
+  readonly returningLetters: readonly HebrewLetter[];
+  readonly gates: readonly string[];
+}
+export function validateIvritCodeExchange(value: unknown): value is IvritCodeExchange {
+  if (!value || typeof value !== "object") return false;
+  const item = value as Partial<IvritCodeExchange>;
+  return (
+    item.schemaVersion === IVRIT_EXCHANGE_VERSION &&
+    typeof item.source === "string" &&
+    item.source.length <= 2048 &&
+    typeof item.sourceHash === "string" &&
+    Array.isArray(item.initialState) &&
+    item.initialState.length === 23 &&
+    Array.isArray(item.finalState) &&
+    item.finalState.length === 23 &&
+    item.initialState.every((entry) => Number.isInteger(entry) && entry >= 0 && entry < 22) &&
+    item.finalState.every((entry) => Number.isInteger(entry) && entry >= 0 && entry < 22) &&
+    HEBREW_LETTERS.includes(item.hiddenKey as HebrewLetter) &&
+    typeof item.patternShape === "string" &&
+    Array.isArray(item.returningLetters) &&
+    item.returningLetters.every((letter) => HEBREW_LETTERS.includes(letter)) &&
+    Array.isArray(item.gates) &&
+    item.gates.every((gate) => typeof gate === "string")
+  );
+}
 export type PrivacyLabel = "public" | "private" | "sensitive";
 export type ValidationStatus = "pending" | "valid" | "invalid";
 export type CapabilityName = "web.read" | "grid.compute" | "sandbox.execute";
