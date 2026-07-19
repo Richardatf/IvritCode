@@ -876,11 +876,26 @@ export function App() {
               Whenever two Hebrew letters appear beside one another, they form a gate. A gate is
               simply a relationship between two letters.
             </p>
-            <div className="friendly-gates">
-              {["ב־ר", "ר־א", "א־ש", "ש־י", "י־ת"].map((gate) => (
-                <span key={gate} lang="he">
-                  {gate}
-                </span>
+            <div className="friendly-gates" aria-label="Five examples of two-letter gates">
+              {[
+                ["ב", "ר"],
+                ["ר", "א"],
+                ["א", "ש"],
+                ["ש", "י"],
+                ["י", "ת"],
+              ].map(([firstLetter, secondLetter], index) => (
+                <figure
+                  className="friendly-gate"
+                  key={`${firstLetter}-${secondLetter}`}
+                  aria-label={`Gate ${index + 1}: ${firstLetter} and ${secondLetter}`}
+                >
+                  <div className="friendly-gate__pair" aria-hidden="true">
+                    <span lang="he">{firstLetter}</span>
+                    <i></i>
+                    <span lang="he">{secondLetter}</span>
+                  </div>
+                  <figcaption>Gate {String(index + 1).padStart(2, "0")}</figcaption>
+                </figure>
               ))}
             </div>
             <p>
