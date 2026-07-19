@@ -918,6 +918,52 @@ export function App() {
             </p>
           </article>
         </section>
+        <section className="panel project-bridge" id="quantum-etz-chaim">
+          <div className="section-title">
+            <div>
+              <span>Q</span>
+              <h2>IvritCode and Quantum Etz Chaim</h2>
+            </div>
+            <p>One engine · two ways to understand it</p>
+          </div>
+          <div className="project-bridge-grid">
+            <article>
+              <p className="eyebrow">IvritCode</p>
+              <h3>The executable language and machine</h3>
+              <p>
+                IvritCode turns Hebrew-letter source into deterministic operations on twenty-two
+                visible registers and the Aleph Olam register. It owns parsing, execution, machine
+                state, and the complete step-by-step trace.
+              </p>
+            </article>
+            <article>
+              <p className="eyebrow">Quantum Etz Chaim</p>
+              <h3>The architecture and visual workbench</h3>
+              <p>
+                Quantum Etz Chaim places that same computation inside a Tree-based systems model.
+                It shows routes, services, gates, observation at Da’at, and manifestation through
+                Malchut without running a second competing engine.
+              </p>
+            </article>
+          </div>
+          <div className="project-handoff" aria-label="How the projects work together">
+            <span>1 · Write Hebrew source</span>
+            <span>2 · IvritCode executes it</span>
+            <span>3 · A versioned trace crosses the exchange contract</span>
+            <span>4 · Quantum Etz Chaim visualizes the same result</span>
+          </div>
+          <p>
+            The exchange records the engine version, path-map version, seed, complete trace hash,
+            and manifestation version. Those fields make the handoff reproducible and reveal when
+            two views are not describing the same run.
+          </p>
+          <div className="hero-actions">
+            <a className="button primary" href="https://quantumetzchaim.com/#ivritcode">
+              Explore Quantum Etz Chaim
+            </a>
+            <a className="button" href="#try">Run IvritCode</a>
+          </div>
+        </section>
         <details className="advanced-qec" id="compiler">
           <summary>Advanced: experimental ivritcode-0.1 compiler and QEC details</summary>
           <section className="panel qec-lab">

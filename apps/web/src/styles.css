@@ -846,6 +846,35 @@ main {
 .open-source .hero-actions {
   justify-content: center;
 }
+
+.project-bridge-grid,
+.project-handoff {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.project-bridge-grid article,
+.project-handoff span {
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+}
+
+.project-bridge-grid h3 {
+  margin-top: 0;
+}
+
+.project-handoff {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 1.25rem 0;
+}
+
+.project-handoff span {
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
 .guide {
   grid-column: 1/-1;
   display: grid;
@@ -1636,6 +1665,9 @@ footer {
   .qec-runtime-grid {
     grid-template-columns: 1fr;
   }
+  .project-handoff {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
   .registers.ring {
     transform: scale(0.72);
     margin-block: -2rem;
@@ -1647,6 +1679,10 @@ footer {
 @media (max-width: 620px) {
   .app-shell {
     padding: 0.7rem;
+  }
+  .project-bridge-grid,
+  .project-handoff {
+    grid-template-columns: 1fr;
   }
   .landing-video {
     grid-template-columns: 1fr;
