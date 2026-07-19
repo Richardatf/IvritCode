@@ -18,9 +18,7 @@ test("builds pointed Hebrew, deletes a grapheme, and animates the constellation"
   await page.getByRole("button", { name: "Run the letters" }).click();
   await expect(page.getByRole("heading", { name: "The constellation has formed." })).toBeVisible();
   await expect(page.getByLabel("Circular 22-letter constellation")).toBeVisible();
-  await expect(
-    page.getByRole("link", { name: "Explore in Quantum Etz Chaim" }),
-  ).toHaveAttribute(
+  await expect(page.getByRole("link", { name: "Explore in Quantum Etz Chaim" })).toHaveAttribute(
     "href",
     /https:\/\/quantumetzchaim\.com\/\?exchange=/,
   );
@@ -28,11 +26,7 @@ test("builds pointed Hebrew, deletes a grapheme, and animates the constellation"
   await expect(page.getByText(/Step \d+ of 3/)).toBeVisible();
 });
 
-test("restores Hebrew source from the Quantum Etz Chaim return link", async ({
-  page,
-}) => {
+test("restores Hebrew source from the Quantum Etz Chaim return link", async ({ page }) => {
   await page.goto(`/?source=${encodeURIComponent("אור")}#try`);
-  await expect(
-    page.getByRole("textbox", { name: "First IvritCode program" }),
-  ).toHaveValue("אור");
+  await expect(page.getByRole("textbox", { name: "First IvritCode program" })).toHaveValue("אור");
 });
