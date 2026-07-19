@@ -940,8 +940,8 @@ export function App() {
               <p className="eyebrow">Quantum Etz Chaim</p>
               <h3>The architecture and visual workbench</h3>
               <p>
-                Quantum Etz Chaim places that same computation inside a Tree-based systems model.
-                It shows routes, services, gates, observation at Da’at, and manifestation through
+                Quantum Etz Chaim places that same computation inside a Tree-based systems model. It
+                shows routes, services, gates, observation at Da’at, and manifestation through
                 Malchut without running a second competing engine.
               </p>
             </article>
@@ -961,7 +961,9 @@ export function App() {
             <a className="button primary" href="https://quantumetzchaim.com/#ivritcode">
               Explore Quantum Etz Chaim
             </a>
-            <a className="button" href="#try">Run IvritCode</a>
+            <a className="button" href="#try">
+              Run IvritCode
+            </a>
           </div>
         </section>
         <details className="advanced-qec" id="compiler">
