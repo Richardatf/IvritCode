@@ -23,7 +23,15 @@ import { compileIvrit } from "@qec/ivrit-compiler";
 import { runQEC, type QECRun } from "@qec/core";
 import { PATH_CHANNELS } from "@qec/path-router";
 import { GATE_PAIRS, GATE_REGISTRY_CHECKSUM } from "@qec/gates-231";
-import { IVRIT_LANGUAGE_SPEC, QEC_SCHEMA_VERSION } from "@qec/spec";
+import {
+  IVRIT_EXCHANGE_VERSION,
+  IVRIT_LANGUAGE_SPEC,
+  QEC_SCHEMA_VERSION,
+  contentHash,
+  type IvritCodeExchange,
+} from "@qec/spec";
+import { HebrewKeyboard } from "./components/HebrewKeyboard.js";
+import { deletePreviousGrapheme, insertHebrewInput } from "./hebrewInput.js";
 import { downloadProgram, initialState, type InitialMode } from "./logic.js";
 const SAMPLE = "# IvritCode · בראשית\nב ר א ש י ת";
 const QEC_SAMPLE = "יִ $r1, 5";
@@ -123,12 +131,19 @@ export function App() {
     [demoSource, setDemoSource] = useState(DEMO_SAMPLE),
     [demoResult, setDemoResult] = useState<ExecutionResult>(),
     [showDemoSteps, setShowDemoSteps] = useState(false),
+    [demoInputError, setDemoInputError] = useState(""),
+    [demoJourneyStep, setDemoJourneyStep] = useState(0),
+    [demoJourneyPlaying, setDemoJourneyPlaying] = useState(false),
     fileRef = useRef<HTMLInputElement>(null),
     demoEditorRef = useRef<HTMLTextAreaElement>(null);
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     localStorage.setItem("ivritcode-theme", theme);
   }, [theme]);
+  useEffect(() => {
+    const sharedSource = new URLSearchParams(window.location.search).get("source");
+    if (sharedSource && sharedSource.length <= 2048) setDemoSource(sharedSource);
+  }, []);
   useEffect(() => {
     loadLexicon("/data/hebrew-lexicon.json")
       .then(setLexicon)
@@ -149,6 +164,19 @@ export function App() {
     );
     return () => window.clearInterval(timer);
   }, [playing, result]);
+  useEffect(() => {
+    if (!demoJourneyPlaying || !demoResult) return;
+    const timer = window.setInterval(() => {
+      setDemoJourneyStep((current) => {
+        if (current >= demoResult.trace.length) {
+          setDemoJourneyPlaying(false);
+          return current;
+        }
+        return current + 1;
+      });
+    }, 700);
+    return () => window.clearInterval(timer);
+  }, [demoJourneyPlaying, demoResult]);
   const run = () => {
     try {
       const output = executeProgram(parseProgram(source, { filename: "observatory.ivc" }), {
@@ -193,40 +221,64 @@ export function App() {
     stream = stateToLetterStream(state),
     matches = useMemo(() => analyzeLexicon(stream, lexicon), [stream, lexicon]);
   const qecCompilation = useMemo(() => compileIvrit(qecSource), [qecSource]);
+  const demoDisplayResult = useMemo(() => {
+    if (!demoResult) return undefined;
+    const visibleState =
+      demoJourneyStep === 0
+        ? makeAlphabetState(demoSource)
+        : (demoResult.trace[Math.min(demoJourneyStep - 1, demoResult.trace.length - 1)]?.after ??
+          demoResult.finalState);
+    return { ...demoResult, finalState: visibleState };
+  }, [demoResult, demoJourneyStep, demoSource]);
   const constellation = useMemo(
-    () => (demoResult ? analyzeConstellation(demoResult) : undefined),
-    [demoResult],
+    () => (demoDisplayResult ? analyzeConstellation(demoDisplayResult) : undefined),
+    [demoDisplayResult],
   );
+  const quantumEtzChaimUrl = useMemo(() => {
+    if (!demoResult || !constellation) return "https://quantumetzchaim.com/#ivritcode";
+    const exchange: IvritCodeExchange = {
+      schemaVersion: IVRIT_EXCHANGE_VERSION,
+      source: demoSource,
+      sourceHash: contentHash({ source: demoSource }),
+      initialState: makeAlphabetState(demoSource),
+      finalState: demoResult.finalState,
+      hiddenKey: constellation.hiddenKey,
+      patternShape: constellation.patternShape,
+      returningLetters: constellation.returningLetters,
+      gates: constellation.strongestGates,
+    };
+    return `https://quantumetzchaim.com/?exchange=${encodeURIComponent(JSON.stringify(exchange))}#ivritcode`;
+  }, [demoResult, constellation, demoSource]);
   const runDemo = () => {
     setDemoResult(
       executeProgram(demoSource, { initialState: makeAlphabetState(demoSource), trace: "full" }),
     );
     setShowDemoSteps(false);
+    setDemoJourneyStep(0);
+    setDemoJourneyPlaying(false);
   };
   const insertDemoText = (text: string) => {
     const editor = demoEditorRef.current;
     if (!editor) return;
-    const start = editor.selectionStart,
-      end = editor.selectionEnd;
-    setDemoSource(`${demoSource.slice(0, start)}${text}${demoSource.slice(end)}`);
+    const edit = insertHebrewInput(demoSource, editor.selectionStart, editor.selectionEnd, text);
+    setDemoSource(edit.value);
+    setDemoInputError(edit.error ?? "");
     setDemoResult(undefined);
     window.requestAnimationFrame(() => {
       editor.focus();
-      editor.setSelectionRange(start + text.length, start + text.length);
+      editor.setSelectionRange(edit.caret, edit.caret);
     });
   };
   const deleteDemoText = () => {
     const editor = demoEditorRef.current;
     if (!editor) return;
-    const start = editor.selectionStart,
-      end = editor.selectionEnd;
-    if (start === 0 && end === 0) return;
-    const deleteFrom = start === end ? start - 1 : start;
-    setDemoSource(`${demoSource.slice(0, deleteFrom)}${demoSource.slice(end)}`);
+    const edit = deletePreviousGrapheme(demoSource, editor.selectionStart, editor.selectionEnd);
+    setDemoSource(edit.value);
+    setDemoInputError("");
     setDemoResult(undefined);
     window.requestAnimationFrame(() => {
       editor.focus();
-      editor.setSelectionRange(deleteFrom, deleteFrom);
+      editor.setSelectionRange(edit.caret, edit.caret);
     });
   };
   const runQecExample = () => {
@@ -421,10 +473,7 @@ export function App() {
                     <small>Hidden Key</small>
                     <strong lang="he">{constellation.hiddenKey}</strong>
                     <span>
-                      {
-                        LETTER_ARCHETYPES[HEBREW_KEYBOARD_LETTERS.indexOf(constellation.hiddenKey)]
-                          ?.title
-                      }
+                      {LETTER_ARCHETYPES[HEBREW_LETTERS.indexOf(constellation.hiddenKey)]?.title}
                     </span>
                   </article>
                   <article>
@@ -467,7 +516,7 @@ export function App() {
                     <svg viewBox="0 0 600 600" aria-hidden="true">
                       <circle cx="300" cy="300" r="236" />
                       {constellation.registers.map((register, index) => {
-                        const targetIndex = HEBREW_KEYBOARD_LETTERS.indexOf(register.target),
+                        const targetIndex = HEBREW_LETTERS.indexOf(register.target),
                           sourceAngle = (index / 22) * Math.PI * 2 - Math.PI / 2,
                           targetAngle = (targetIndex / 22) * Math.PI * 2 - Math.PI / 2,
                           radius = 236;
@@ -522,9 +571,39 @@ export function App() {
                 </p>
                 <div className="toolbar resonance-actions">
                   <button className="primary">Read the Constellation</button>
-                  <button onClick={() => setShowDemoSteps((current) => !current)}>
-                    {showDemoSteps ? "Hide the Journey" : "Watch the Journey"}
+                  <a className="button primary" href={quantumEtzChaimUrl}>
+                    Explore in Quantum Etz Chaim
+                  </a>
+                  <button
+                    onClick={() => {
+                      setShowDemoSteps(true);
+                      setDemoJourneyStep(0);
+                      setDemoJourneyPlaying(true);
+                    }}
+                  >
+                    Watch the Journey
                   </button>
+                  <button
+                    onClick={() => setDemoJourneyPlaying((current) => !current)}
+                    disabled={!showDemoSteps}
+                  >
+                    {demoJourneyPlaying ? "Pause" : "Resume"}
+                  </button>
+                  <button
+                    onClick={() =>
+                      setDemoJourneyStep((current) =>
+                        Math.min(current + 1, demoResult.trace.length),
+                      )
+                    }
+                    disabled={!showDemoSteps}
+                  >
+                    Step
+                  </button>
+                  {showDemoSteps && (
+                    <output className="journey-progress" aria-live="polite">
+                      Step {demoJourneyStep} of {demoResult.trace.length}
+                    </output>
+                  )}
                   <details className="resonance-math">
                     <summary>See the Mathematics</summary>
                     <pre>
@@ -555,97 +634,115 @@ export function App() {
               </>
             )}
           </div>
-          <section className="hebrew-keyboard" aria-label="On-screen Hebrew keyboard">
-            <div className="keyboard-heading">
-              <div>
-                <p className="eyebrow">Hebrew input</p>
-                <h3>Letters, niqqud, and cantillation</h3>
+          <HebrewKeyboard
+            onInsert={insertDemoText}
+            onDelete={deleteDemoText}
+            onClear={() => {
+              setDemoSource("");
+              setDemoResult(undefined);
+              setDemoInputError("");
+              demoEditorRef.current?.focus();
+            }}
+            {...(demoInputError ? { error: demoInputError } : {})}
+          />
+          {/* Legacy inline keyboard retained temporarily for compatibility during component extraction. */}
+          {/* eslint-disable-next-line no-constant-binary-expression */}
+          {false && (
+            <section className="hebrew-keyboard" aria-label="On-screen Hebrew keyboard">
+              <div className="keyboard-heading">
+                <div>
+                  <p className="eyebrow">Hebrew input</p>
+                  <h3>Letters, niqqud, and cantillation</h3>
+                </div>
+                <p>Select a letter first, then add any marks that belong to it.</p>
               </div>
-              <p>Select a letter first, then add any marks that belong to it.</p>
-            </div>
-            <div className="keyboard-group">
-              <h4>Letters</h4>
-              <div className="keyboard-keys letters" dir="rtl">
-                {HEBREW_KEYBOARD_LETTERS.map((letter, index) => (
-                  <button
-                    type="button"
-                    className="hebrew-key"
-                    key={letter}
-                    aria-label={`${LETTER_NAMES[index]} (${letter})`}
-                    title={LETTER_NAMES[index]}
-                    onClick={() => insertDemoText(letter)}
-                  >
-                    {letter}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="keyboard-lower">
               <div className="keyboard-group">
-                <h4>Niqqud · vowel and mode marks</h4>
-                <div className="keyboard-keys marks">
-                  {HEBREW_NIQQUD.map(([mark, name]) => (
+                <h4>Letters</h4>
+                <div className="keyboard-keys letters" dir="rtl">
+                  {HEBREW_KEYBOARD_LETTERS.map((letter, index) => (
                     <button
                       type="button"
-                      className="hebrew-key mark-key"
-                      key={name}
-                      aria-label={`Add ${name}`}
-                      title={name}
-                      onClick={() => insertDemoText(mark)}
+                      className="hebrew-key"
+                      key={letter}
+                      aria-label={`${LETTER_NAMES[index]} (${letter})`}
+                      title={LETTER_NAMES[index]}
+                      onClick={() => insertDemoText(letter)}
                     >
-                      <span aria-hidden="true">◌{mark}</span>
-                      <small>{name}</small>
+                      {letter}
                     </button>
                   ))}
                 </div>
               </div>
-              <div className="keyboard-group">
-                <h4>Cantillation · control marks</h4>
-                <div className="keyboard-keys marks">
-                  {HEBREW_CANTILLATION.map(([mark, name]) => (
-                    <button
-                      type="button"
-                      className="hebrew-key mark-key"
-                      key={name}
-                      aria-label={`Add ${name}`}
-                      title={name}
-                      onClick={() => insertDemoText(mark)}
-                    >
-                      <span aria-hidden="true">◌{mark}</span>
-                      <small>{name}</small>
-                    </button>
-                  ))}
+              <div className="keyboard-lower">
+                <div className="keyboard-group">
+                  <h4>Niqqud · vowel and mode marks</h4>
+                  <div className="keyboard-keys marks">
+                    {HEBREW_NIQQUD.map(([mark, name]) => (
+                      <button
+                        type="button"
+                        className="hebrew-key mark-key"
+                        key={name}
+                        aria-label={`Add ${name}`}
+                        title={name}
+                        onClick={() => insertDemoText(mark)}
+                      >
+                        <span aria-hidden="true">◌{mark}</span>
+                        <small>{name}</small>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="keyboard-group">
+                  <h4>Cantillation · control marks</h4>
+                  <div className="keyboard-keys marks">
+                    {HEBREW_CANTILLATION.map(([mark, name]) => (
+                      <button
+                        type="button"
+                        className="hebrew-key mark-key"
+                        key={name}
+                        aria-label={`Add ${name}`}
+                        title={name}
+                        onClick={() => insertDemoText(mark)}
+                      >
+                        <span aria-hidden="true">◌{mark}</span>
+                        <small>{name}</small>
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="keyboard-actions">
-              <button type="button" onClick={() => insertDemoText(" ")}>
-                Space
-              </button>
-              <button type="button" onClick={() => insertDemoText("\n")}>
-                New line
-              </button>
-              <button type="button" onClick={deleteDemoText}>
-                Delete
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setDemoSource("");
-                  setDemoResult(undefined);
-                  demoEditorRef.current?.focus();
-                }}
-              >
-                Clear
-              </button>
-            </div>
-          </section>
+              <div className="keyboard-actions">
+                <button type="button" onClick={() => insertDemoText(" ")}>
+                  Space
+                </button>
+                <button type="button" onClick={() => insertDemoText("\n")}>
+                  New line
+                </button>
+                <button type="button" onClick={deleteDemoText}>
+                  Delete
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDemoSource("");
+                    setDemoResult(undefined);
+                    demoEditorRef.current?.focus();
+                  }}
+                >
+                  Clear
+                </button>
+              </div>
+            </section>
+          )}
           {demoResult && showDemoSteps && (
             <div className="simple-steps">
               {demoResult.trace.map((step) => {
                 const info = publicOperator(step.instruction.letter);
                 return (
-                  <article key={step.step}>
+                  <article
+                    key={step.step}
+                    className={demoJourneyStep === step.step + 1 ? "current" : ""}
+                  >
                     <span lang="he">{step.instruction.letter}</span>
                     <div>
                       <h3>{info?.[1] ?? LETTER_NAMES[step.instruction.opcodeIndex]}</h3>

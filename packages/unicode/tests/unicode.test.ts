@@ -20,5 +20,8 @@ describe("Hebrew Unicode", () => {
     expect(parseProgram("hello א # בת\nג").instructions.map((x) => x.letter)).toEqual(["א", "ג"]);
   });
   it("rejects detached marks", () => expect(() => parseProgram("ָא")).toThrow(/no adjacent/));
+  it("attaches sof pasuq as a supported control mark", () => {
+    expect(parseProgram("א\u05c3").instructions[0]?.cantillation[0]?.name).toBe("Sof pasuq");
+  });
   it("strips marks for comparison", () => expect(stripHebrewMarks("שָׁלוֹם")).toBe("שלום"));
 });

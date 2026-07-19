@@ -4,7 +4,7 @@
   "private": true,
   "description": "IvritCode — a deterministic Hebrew symbolic computing language",
   "homepage": "https://ivritcode.org",
-  "repository": "github:richardatf-oss/IvritCode",
+  "repository": "github:Richardatf/IvritCode",
   "license": "MIT",
   "engines": {
     "node": ">=22"
@@ -22,6 +22,7 @@
     "build": "npm run sync:spec && npm run build --workspaces --if-present",
     "test": "npm run build && vitest run --coverage.enabled=false",
     "test:watch": "vitest",
+    "test:e2e": "playwright test",
     "typecheck": "tsc -b --pretty false",
     "lint": "eslint . --max-warnings 0",
     "format": "prettier --write .",
@@ -31,6 +32,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
+    "@playwright/test": "^1.61.1",
     "@types/node": "^22.19.7",
     "@vitest/coverage-v8": "^4.1.0",
     "eslint": "^9.39.2",

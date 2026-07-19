@@ -491,6 +491,15 @@ main {
   padding-top: 1rem;
   border-top: 1px solid var(--line);
 }
+.keyboard-error {
+  color: #b23a2b;
+  font-weight: 700;
+}
+.journey-progress {
+  align-self: center;
+  padding: 0.65rem;
+  color: var(--muted);
+}
 .demo-register-output {
   margin: 1.2rem 0;
   padding: 1rem;
@@ -593,6 +602,10 @@ main {
   border-radius: 50%;
   background: var(--surface);
   transform: rotate(var(--angle)) translateY(-240px) rotate(calc(-1 * var(--angle)));
+  transition:
+    border-color 0.35s ease,
+    box-shadow 0.35s ease,
+    color 0.35s ease;
 }
 .constellation-node span {
   font: 0.72rem var(--hebrew);
@@ -704,6 +717,10 @@ main {
   border: 1px solid var(--line);
   border-radius: 12px;
   background: var(--surface);
+}
+.simple-steps article.current {
+  border-color: var(--gold);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--gold) 22%, transparent);
 }
 .simple-steps article > span {
   font: 2.5rem var(--hebrew);
