@@ -4,8 +4,8 @@ export const QEC_SCHEMA_VERSION = "qec-0.1" as const;
 export const IVRIT_SPEC_VERSION = "ivritcode-1.0" as const;
 export const IVRIT_EXCHANGE_VERSION = "ivritcode-exchange-0.2" as const;
 export const IVRIT_ENGINE_VERSION = "1.0.0" as const;
-export const QEC_PATH_MAP_VERSION = "qec-path-map-0.1.0" as const;
-export const QEC_MANIFESTATION_VERSION = "qec-manifestation-0.3" as const;
+export const QEC_PATH_MAP_VERSION = "qec-path-map-0.3.0" as const;
+export const QEC_MANIFESTATION_VERSION = "qec-manifestation-0.2" as const;
 export const HEBREW_LETTERS = [
   "א",
   "ב",

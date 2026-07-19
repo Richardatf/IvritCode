@@ -23,8 +23,8 @@
   "properties": {
     "schemaVersion": { "const": "ivritcode-exchange-0.2" },
     "engineVersion": { "const": "1.0.0" },
-    "pathMapVersion": { "const": "qec-path-map-0.1.0" },
-    "manifestationVersion": { "const": "qec-manifestation-0.3" },
+    "pathMapVersion": { "const": "qec-path-map-0.3.0" },
+    "manifestationVersion": { "const": "qec-manifestation-0.2" },
     "seed": { "type": "integer", "minimum": 0, "maximum": 21 },
     "traceHash": { "type": "string", "minLength": 1 },
     "source": { "type": "string", "maxLength": 2048 },
