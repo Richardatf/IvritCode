@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ivritcode.org/spec/ivritcode-exchange-0.2.schema.json",
+  "title": "IvritCode–Quantum Etz Chaim Exchange 0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "engineVersion",
+    "pathMapVersion",
+    "manifestationVersion",
+    "seed",
+    "traceHash",
+    "source",
+    "sourceHash",
+    "initialState",
+    "finalState",
+    "hiddenKey",
+    "patternShape",
+    "returningLetters",
+    "gates"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "ivritcode-exchange-0.2" },
+    "engineVersion": { "const": "1.0.0" },
+    "pathMapVersion": { "const": "qec-path-map-0.1.0" },
+    "manifestationVersion": { "const": "qec-manifestation-0.3" },
+    "seed": { "type": "integer", "minimum": 0, "maximum": 21 },
+    "traceHash": { "type": "string", "minLength": 1 },
+    "source": { "type": "string", "maxLength": 2048 },
+    "sourceHash": { "type": "string", "minLength": 1 },
+    "initialState": { "$ref": "#/$defs/registerState" },
+    "finalState": { "$ref": "#/$defs/registerState" },
+    "hiddenKey": { "type": "string" },
+    "patternShape": { "type": "string" },
+    "returningLetters": { "type": "array", "items": { "type": "string" } },
+    "gates": { "type": "array", "items": { "type": "string" } }
+  },
+  "$defs": {
+    "registerState": {
+      "type": "array",
+      "minItems": 23,
+      "maxItems": 23,
+      "items": { "type": "integer", "minimum": 0, "maximum": 21 }
+    }
+  }
+}

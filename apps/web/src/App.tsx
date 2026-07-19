@@ -25,7 +25,10 @@ import { PATH_CHANNELS } from "@qec/path-router";
 import { GATE_PAIRS, GATE_REGISTRY_CHECKSUM } from "@qec/gates-231";
 import {
   IVRIT_EXCHANGE_VERSION,
+  IVRIT_ENGINE_VERSION,
   IVRIT_LANGUAGE_SPEC,
+  QEC_MANIFESTATION_VERSION,
+  QEC_PATH_MAP_VERSION,
   QEC_SCHEMA_VERSION,
   contentHash,
   type IvritCodeExchange,
@@ -238,6 +241,11 @@ export function App() {
     if (!demoResult || !constellation) return "https://quantumetzchaim.com/#ivritcode";
     const exchange: IvritCodeExchange = {
       schemaVersion: IVRIT_EXCHANGE_VERSION,
+      engineVersion: IVRIT_ENGINE_VERSION,
+      pathMapVersion: QEC_PATH_MAP_VERSION,
+      manifestationVersion: QEC_MANIFESTATION_VERSION,
+      seed: demoResult.context.deterministicSeed,
+      traceHash: contentHash(demoResult.trace),
       source: demoSource,
       sourceHash: contentHash({ source: demoSource }),
       initialState: makeAlphabetState(demoSource),
@@ -250,8 +258,13 @@ export function App() {
     return `https://quantumetzchaim.com/?exchange=${encodeURIComponent(JSON.stringify(exchange))}#ivritcode`;
   }, [demoResult, constellation, demoSource]);
   const runDemo = () => {
+    const seededState = makeAlphabetState(demoSource);
     setDemoResult(
-      executeProgram(demoSource, { initialState: makeAlphabetState(demoSource), trace: "full" }),
+      executeProgram(demoSource, {
+        initialState: seededState,
+        deterministicSeed: seededState[ALEPH_OLAM_INDEX]!,
+        trace: "full",
+      }),
     );
     setShowDemoSteps(false);
     setDemoJourneyStep(0);
@@ -385,6 +398,7 @@ export function App() {
         <a href="#gates">231 Gates</a>
         <a href="#chavruta">Chavruta</a>
         <a href="#about-project">About</a>
+        <a href="https://quantumetzchaim.com/">Quantum Etz Chaim</a>
       </nav>
       <main>
         <section className="panel landing-video" aria-labelledby="landing-video-title">
@@ -1031,7 +1045,7 @@ export function App() {
                 ) : (
                   <p>
                     Run the example to pass through Keter, Binah, Da&apos;at, Gevurah, Hod, Yesod,
-                    and Malkhut.
+                    and Malchut.
                   </p>
                 )}
               </section>
