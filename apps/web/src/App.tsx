@@ -25,7 +25,10 @@ import { PATH_CHANNELS } from "@qec/path-router";
 import { GATE_PAIRS, GATE_REGISTRY_CHECKSUM } from "@qec/gates-231";
 import {
   IVRIT_EXCHANGE_VERSION,
+  IVRIT_ENGINE_VERSION,
   IVRIT_LANGUAGE_SPEC,
+  QEC_MANIFESTATION_VERSION,
+  QEC_PATH_MAP_VERSION,
   QEC_SCHEMA_VERSION,
   contentHash,
   type IvritCodeExchange,
@@ -134,8 +137,10 @@ export function App() {
     [demoInputError, setDemoInputError] = useState(""),
     [demoJourneyStep, setDemoJourneyStep] = useState(0),
     [demoJourneyPlaying, setDemoJourneyPlaying] = useState(false),
+    [showConstellationReading, setShowConstellationReading] = useState(false),
     fileRef = useRef<HTMLInputElement>(null),
-    demoEditorRef = useRef<HTMLTextAreaElement>(null);
+    demoEditorRef = useRef<HTMLTextAreaElement>(null),
+    constellationReadingRef = useRef<HTMLElement>(null);
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     localStorage.setItem("ivritcode-theme", theme);
@@ -238,6 +243,11 @@ export function App() {
     if (!demoResult || !constellation) return "https://quantumetzchaim.com/#ivritcode";
     const exchange: IvritCodeExchange = {
       schemaVersion: IVRIT_EXCHANGE_VERSION,
+      engineVersion: IVRIT_ENGINE_VERSION,
+      pathMapVersion: QEC_PATH_MAP_VERSION,
+      manifestationVersion: QEC_MANIFESTATION_VERSION,
+      seed: demoResult.context.deterministicSeed,
+      traceHash: contentHash(demoResult.trace),
       source: demoSource,
       sourceHash: contentHash({ source: demoSource }),
       initialState: makeAlphabetState(demoSource),
@@ -250,10 +260,16 @@ export function App() {
     return `https://quantumetzchaim.com/?exchange=${encodeURIComponent(JSON.stringify(exchange))}#ivritcode`;
   }, [demoResult, constellation, demoSource]);
   const runDemo = () => {
+    const seededState = makeAlphabetState(demoSource);
     setDemoResult(
-      executeProgram(demoSource, { initialState: makeAlphabetState(demoSource), trace: "full" }),
+      executeProgram(demoSource, {
+        initialState: seededState,
+        deterministicSeed: seededState[ALEPH_OLAM_INDEX]!,
+        trace: "full",
+      }),
     );
     setShowDemoSteps(false);
+    setShowConstellationReading(false);
     setDemoJourneyStep(0);
     setDemoJourneyPlaying(false);
   };
@@ -385,6 +401,7 @@ export function App() {
         <a href="#gates">231 Gates</a>
         <a href="#chavruta">Chavruta</a>
         <a href="#about-project">About</a>
+        <a href="https://quantumetzchaim.com/">Quantum Etz Chaim</a>
       </nav>
       <main>
         <section className="panel landing-video" aria-labelledby="landing-video-title">
@@ -570,7 +587,24 @@ export function App() {
                   authority.
                 </p>
                 <div className="toolbar resonance-actions">
-                  <button className="primary">Read the Constellation</button>
+                  <button
+                    className="primary"
+                    aria-expanded={showConstellationReading}
+                    aria-controls="constellation-reading"
+                    onClick={() => {
+                      const opening = !showConstellationReading;
+                      setShowConstellationReading(opening);
+                      if (opening)
+                        window.requestAnimationFrame(() =>
+                          constellationReadingRef.current?.scrollIntoView({
+                            behavior: "smooth",
+                            block: "nearest",
+                          }),
+                        );
+                    }}
+                  >
+                    {showConstellationReading ? "Close the Reading" : "Read the Constellation"}
+                  </button>
                   <a className="button primary" href={quantumEtzChaimUrl}>
                     Explore in Quantum Etz Chaim
                   </a>
@@ -631,6 +665,82 @@ export function App() {
                     Try Another Word
                   </button>
                 </div>
+                {showConstellationReading && (
+                  <section
+                    className="constellation-reading"
+                    id="constellation-reading"
+                    ref={constellationReadingRef}
+                    aria-labelledby="constellation-reading-title"
+                  >
+                    <div>
+                      <p className="eyebrow">Reflective reading / deterministic evidence</p>
+                      <h4 id="constellation-reading-title">
+                        {PATTERN_NAMES[constellation.patternShape]}
+                      </h4>
+                      <p className="reading-lede">{constellation.summary}</p>
+                    </div>
+                    <div className="reading-narrative">
+                      <article>
+                        <small>Orientation</small>
+                        <strong>
+                          <span lang="he">{constellation.hiddenKey}</span> ·{" "}
+                          {
+                            LETTER_ARCHETYPES[HEBREW_LETTERS.indexOf(constellation.hiddenKey)]
+                              ?.title
+                          }
+                        </strong>
+                        <p>
+                          The hidden register supplies the stable orientation from which this result
+                          is read.
+                        </p>
+                      </article>
+                      <article>
+                        <small>Movement</small>
+                        <strong>{constellation.changedRegisters} of 22 letters changed</strong>
+                        <p>
+                          {constellation.returningLetters.length
+                            ? `${constellation.returningLetters.length} letters returned to their own positions: ${constellation.returningLetters.join(" · ")}.`
+                            : "No letter returned exactly to its starting position."}
+                        </p>
+                      </article>
+                      <article>
+                        <small>Gathering</small>
+                        <strong lang="he">
+                          {constellation.dominantLetters.join(" · ") || "Open field"}
+                        </strong>
+                        <p>
+                          {constellation.dominantLetters.length
+                            ? "These destinations receive the strongest chorus in the completed state."
+                            : `The result remains distributed across ${constellation.distinctValueCount} distinct letters.`}
+                        </p>
+                      </article>
+                      <article>
+                        <small>Relations</small>
+                        <strong lang="he">
+                          {constellation.strongestGates.join(" · ") || "No repeated gate"}
+                        </strong>
+                        <p>
+                          These are the strongest adjacent letter-pairs in the executed program.
+                        </p>
+                      </article>
+                    </div>
+                    <dl className="reading-scores">
+                      <div>
+                        <dt>Symmetry</dt>
+                        <dd>{Math.round(constellation.symmetryScore * 100)}%</dd>
+                      </div>
+                      <div>
+                        <dt>Rotation</dt>
+                        <dd>{Math.round(constellation.rotationScore * 100)}%</dd>
+                      </div>
+                      <div>
+                        <dt>Dispersion</dt>
+                        <dd>{Math.round(constellation.dispersionScore * 100)}%</dd>
+                      </div>
+                    </dl>
+                    <p className="reading-caveat">{constellation.warnings[0]}</p>
+                  </section>
+                )}
               </>
             )}
           </div>
@@ -904,6 +1014,54 @@ export function App() {
             </p>
           </article>
         </section>
+        <section className="panel project-bridge" id="quantum-etz-chaim">
+          <div className="section-title">
+            <div>
+              <span>Q</span>
+              <h2>IvritCode and Quantum Etz Chaim</h2>
+            </div>
+            <p>One engine · two ways to understand it</p>
+          </div>
+          <div className="project-bridge-grid">
+            <article>
+              <p className="eyebrow">IvritCode</p>
+              <h3>The executable language and machine</h3>
+              <p>
+                IvritCode turns Hebrew-letter source into deterministic operations on twenty-two
+                visible registers and the Aleph Olam register. It owns parsing, execution, machine
+                state, and the complete step-by-step trace.
+              </p>
+            </article>
+            <article>
+              <p className="eyebrow">Quantum Etz Chaim</p>
+              <h3>The architecture and visual workbench</h3>
+              <p>
+                Quantum Etz Chaim places that same computation inside a Tree-based systems model. It
+                shows routes, services, gates, observation at Da’at, and manifestation through
+                Malchut without running a second competing engine.
+              </p>
+            </article>
+          </div>
+          <div className="project-handoff" aria-label="How the projects work together">
+            <span>1 · Write Hebrew source</span>
+            <span>2 · IvritCode executes it</span>
+            <span>3 · A versioned trace crosses the exchange contract</span>
+            <span>4 · Quantum Etz Chaim visualizes the same result</span>
+          </div>
+          <p>
+            The exchange records the engine version, path-map version, seed, complete trace hash,
+            and manifestation version. Those fields make the handoff reproducible and reveal when
+            two views are not describing the same run.
+          </p>
+          <div className="hero-actions">
+            <a className="button primary" href="https://quantumetzchaim.com/#ivritcode">
+              Explore Quantum Etz Chaim
+            </a>
+            <a className="button" href="#try">
+              Run IvritCode
+            </a>
+          </div>
+        </section>
         <details className="advanced-qec" id="compiler">
           <summary>Advanced: experimental ivritcode-0.1 compiler and QEC details</summary>
           <section className="panel qec-lab">
@@ -1031,7 +1189,7 @@ export function App() {
                 ) : (
                   <p>
                     Run the example to pass through Keter, Binah, Da&apos;at, Gevurah, Hod, Yesod,
-                    and Malkhut.
+                    and Malchut.
                   </p>
                 )}
               </section>

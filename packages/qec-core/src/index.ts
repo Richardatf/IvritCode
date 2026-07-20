@@ -100,7 +100,7 @@ export const verifyRun = (
     },
   ];
   const base = {
-    ...metadata("Da'at", manifest.privacyLabel),
+    ...metadata("Daat", manifest.privacyLabel),
     verified: checks.every((item) => item.passed),
     checks,
   };
@@ -130,7 +130,7 @@ const sandbox = (
       );
   }
   const base = {
-    ...metadata("Malkhut", manifest.privacyLabel),
+    ...metadata("Malchut", manifest.privacyLabel),
     exitCode: 0,
     outputs: state,
     warnings,
@@ -154,7 +154,7 @@ export const runQEC = (
   );
   const verification = verifyRun(manifest, compilation);
   trace.record(
-    "Da'at",
+    "Daat",
     verification.verified ? "passed" : "denied",
     "Explicit source, version, capability, and provenance checks completed.",
     verification,
@@ -191,7 +191,7 @@ export const runQEC = (
   );
   trace.record("Yesod", "passed", "Initial state and replay inputs recorded.", inputs);
   const result = sandbox(compilation.ir, manifest, policy, inputs);
-  trace.record("Malkhut", "passed", "Local sandbox completed.", result);
+  trace.record("Malchut", "passed", "Local sandbox completed.", result);
   const finished = trace.finish();
   return {
     manifest,

@@ -2,7 +2,10 @@ import languageSpec from "./ivritcode-0.1.json" with { type: "json" };
 export const IVRIT_LANGUAGE_SPEC = languageSpec;
 export const QEC_SCHEMA_VERSION = "qec-0.1" as const;
 export const IVRIT_SPEC_VERSION = "ivritcode-1.0" as const;
-export const IVRIT_EXCHANGE_VERSION = "ivritcode-exchange-0.1" as const;
+export const IVRIT_EXCHANGE_VERSION = "ivritcode-exchange-0.2" as const;
+export const IVRIT_ENGINE_VERSION = "1.0.0" as const;
+export const QEC_PATH_MAP_VERSION = "qec-path-map-0.3.0" as const;
+export const QEC_MANIFESTATION_VERSION = "qec-manifestation-0.2" as const;
 export const HEBREW_LETTERS = [
   "א",
   "ב",
@@ -30,6 +33,11 @@ export const HEBREW_LETTERS = [
 export type HebrewLetter = (typeof HEBREW_LETTERS)[number];
 export interface IvritCodeExchange {
   readonly schemaVersion: typeof IVRIT_EXCHANGE_VERSION;
+  readonly engineVersion: typeof IVRIT_ENGINE_VERSION;
+  readonly pathMapVersion: typeof QEC_PATH_MAP_VERSION;
+  readonly manifestationVersion: typeof QEC_MANIFESTATION_VERSION;
+  readonly seed: number;
+  readonly traceHash: string;
   readonly source: string;
   readonly sourceHash: string;
   readonly initialState: readonly number[];
@@ -44,6 +52,14 @@ export function validateIvritCodeExchange(value: unknown): value is IvritCodeExc
   const item = value as Partial<IvritCodeExchange>;
   return (
     item.schemaVersion === IVRIT_EXCHANGE_VERSION &&
+    item.engineVersion === IVRIT_ENGINE_VERSION &&
+    item.pathMapVersion === QEC_PATH_MAP_VERSION &&
+    item.manifestationVersion === QEC_MANIFESTATION_VERSION &&
+    Number.isInteger(item.seed) &&
+    Number(item.seed) >= 0 &&
+    Number(item.seed) < 22 &&
+    typeof item.traceHash === "string" &&
+    item.traceHash.length > 0 &&
     typeof item.source === "string" &&
     item.source.length <= 2048 &&
     typeof item.sourceHash === "string" &&
@@ -74,8 +90,8 @@ export type SefirahName =
   | "Netzach"
   | "Hod"
   | "Yesod"
-  | "Malkhut"
-  | "Da'at";
+  | "Malchut"
+  | "Daat";
 
 export interface SourceReference {
   readonly uri: string;
@@ -287,8 +303,8 @@ export const SEFIRAH_RESPONSIBILITIES: Readonly<Record<SefirahName, string>> = {
   Netzach: "Deterministic scheduling",
   Hod: "Compilation and serialization",
   Yesod: "State, events, and replay",
-  Malkhut: "Sandboxed execution and results",
-  "Da'at": "Explicit verification and provenance boundary",
+  Malchut: "Sandboxed execution and results",
+  Daat: "Explicit verification and provenance boundary",
 };
 export const OBJECT_SCHEMAS = {
   ExecutionManifest: {

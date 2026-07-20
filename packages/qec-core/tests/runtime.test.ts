@@ -2,14 +2,14 @@ import { describe, expect, it } from "vitest";
 import { createManifest, runQEC } from "../src/index.js";
 import { requireCapability } from "@qec/security";
 describe("QEC execution contract", () => {
-  it("passes the acceptance program through Da'at and the local sandbox", () => {
+  it("passes the acceptance program through Daat and the local sandbox", () => {
     const run = runQEC("יִ $r1, 5", { r1: 2 });
     expect(run.result.outputs.r1).toBe(7);
     expect(run.verification.verified).toBe(true);
     expect(run.trace.events.map((event) => event.stage)).toEqual([
       "Keter",
       "Binah",
-      "Da'at",
+      "Daat",
       "Chokhmah",
       "Chesed",
       "Gevurah",
@@ -17,10 +17,10 @@ describe("QEC execution contract", () => {
       "Netzach",
       "Hod",
       "Yesod",
-      "Malkhut",
+      "Malchut",
     ]);
   });
-  it("cannot bypass Da'at with a mismatched manifest", () => {
+  it("cannot bypass Daat with a mismatched manifest", () => {
     const manifest = { ...createManifest("יִ $r1, 5"), programHash: "tampered" };
     expect(() => runQEC("יִ $r1, 5", { r1: 0 }, manifest)).toThrow(/VerificationDenied/);
   });

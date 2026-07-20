@@ -1,8 +1,19 @@
 import { describe, expect, it } from "vitest";
-import { IVRIT_EXCHANGE_VERSION, validateIvritCodeExchange } from "../src/index.js";
+import {
+  IVRIT_ENGINE_VERSION,
+  IVRIT_EXCHANGE_VERSION,
+  QEC_MANIFESTATION_VERSION,
+  QEC_PATH_MAP_VERSION,
+  validateIvritCodeExchange,
+} from "../src/index.js";
 
 const fixture = {
   schemaVersion: IVRIT_EXCHANGE_VERSION,
+  engineVersion: IVRIT_ENGINE_VERSION,
+  pathMapVersion: QEC_PATH_MAP_VERSION,
+  manifestationVersion: QEC_MANIFESTATION_VERSION,
+  seed: 9,
+  traceHash: "fnv1a32-complete-trace",
   source: "אור",
   sourceHash: "fnv1a32-example",
   initialState: [...Array.from({ length: 22 }, (_, index) => index), 0],
