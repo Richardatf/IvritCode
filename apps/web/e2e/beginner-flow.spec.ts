@@ -29,9 +29,9 @@ test("builds pointed Hebrew, deletes a grapheme, and animates the constellation"
     "aria-expanded",
     "true",
   );
-  await expect(page.getByRole("link", { name: "Explore in Quantum Etz Chaim" })).toHaveAttribute(
+  await expect(page.getByRole("link", { name: "Inspect Run Passport" })).toHaveAttribute(
     "href",
-    /https:\/\/quantumetzchaim\.com\/\?exchange=/,
+    /https:\/\/quantumetzchaim\.com\/\?passport=/,
   );
   await page.getByRole("button", { name: "Watch the Journey" }).click();
   await expect(page.getByText(/Step \d+ of 3/)).toBeVisible();
