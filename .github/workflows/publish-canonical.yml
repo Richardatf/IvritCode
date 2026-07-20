@@ -1,0 +1,55 @@
+name: Publish canonical packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Verify package payloads or publish them to npm
+        required: true
+        type: choice
+        default: verify
+        options:
+          - verify
+          - publish
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      - run: npm install --global npm@11
+      - run: npm ci
+      - run: npm test
+      - name: Verify publish payloads and dependency closure
+        run: npm run release:canonical:check
+
+  publish:
+    if: inputs.mode == 'publish'
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      - run: npm install --global npm@11
+      - run: npm ci
+      - run: npm run build
+      - name: Publish canonical packages with provenance
+        run: node scripts/release-canonical-packages.mjs --publish
