@@ -5,6 +5,12 @@ import {
   QEC_MANIFESTATION_VERSION,
   QEC_PATH_MAP_VERSION,
   validateIvritCodeExchange,
+  validateRunPassport,
+  inspectRunPassport,
+  contentHash,
+  createRunPassport,
+  serializeRunPassport,
+  QEC_RUN_PASSPORT_VERSION,
 } from "../src/index.js";
 
 const fixture = {
@@ -28,5 +34,60 @@ describe("IvritCode exchange", () => {
   it("rejects wrong versions and register counts", () => {
     expect(validateIvritCodeExchange({ ...fixture, schemaVersion: "future" })).toBe(false);
     expect(validateIvritCodeExchange({ ...fixture, finalState: [1] })).toBe(false);
+  });
+});
+
+it("builds and serializes byte-stable passports canonically", () => {
+  const input = {
+    source: fixture.source,
+    seed: fixture.seed,
+    initialState: fixture.initialState,
+    finalState: fixture.finalState,
+    hiddenKey: fixture.hiddenKey,
+    patternShape: fixture.patternShape,
+    returningLetters: fixture.returningLetters,
+    gates: fixture.gates,
+    trace: [
+      {
+        letter: "א" as const,
+        before: fixture.initialState,
+        after: fixture.finalState,
+        changedRegisters: [22],
+      },
+    ],
+  };
+  const first = createRunPassport(input),
+    second = createRunPassport(input);
+  expect(first).toEqual(second);
+  expect(serializeRunPassport(first)).toBe(serializeRunPassport(second));
+  expect(JSON.parse(serializeRunPassport(first))).toEqual(first);
+});
+
+it("validates a complete deterministic run passport", () => {
+  const trace = [
+    {
+      sequence: 0,
+      letter: "א",
+      before: fixture.initialState,
+      after: fixture.finalState,
+      beforeHash: contentHash(fixture.initialState),
+      afterHash: contentHash(fixture.finalState),
+      changedRegisters: [22],
+    },
+  ];
+  const traceHash = contentHash(trace);
+  const passport = {
+    ...fixture,
+    schemaVersion: QEC_RUN_PASSPORT_VERSION,
+    sourceHash: contentHash({ source: fixture.source }),
+    traceHash,
+    runId: traceHash,
+    trace,
+    validation: { status: "valid", registerCount: 23, traceComplete: true, deterministic: true },
+  };
+  expect(validateRunPassport(passport)).toBe(true);
+  expect(inspectRunPassport({ ...passport, finalState: fixture.initialState })).toMatchObject({
+    valid: false,
+    errors: ["final-state-chain"],
   });
 });
