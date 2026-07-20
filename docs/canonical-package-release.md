@@ -34,5 +34,9 @@ After it succeeds, rerun it in `publish` mode and approve the `npm` environment.
 Existing versions are detected and skipped, making a partially completed release
 safe to resume.
 
-After all packages are visible on npm, Quantum Etz Chaim can remove its
-`vendor/ivritcode` submodule and install these exact versions from the registry.
+Quantum Etz Chaim no longer carries a `vendor/ivritcode` submodule. Until the
+npm scopes are published, it installs the exact tarballs from the immutable
+[`canonical-packages-2026.07.20.1`](https://github.com/Richardatf/IvritCode/releases/tag/canonical-packages-2026.07.20.1)
+GitHub Release, with resolved URLs and integrity hashes recorded in its lockfile.
+Once the same versions are visible on npm, those release URLs can be replaced by
+registry versions without changing package names or runtime imports.
