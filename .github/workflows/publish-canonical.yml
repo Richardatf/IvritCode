@@ -31,6 +31,8 @@ jobs:
       - run: npm test
       - name: Verify publish payloads and dependency closure
         run: npm run release:canonical:check
+      - name: Install tarballs in an isolated consumer
+        run: npm run release:canonical:smoke
 
   publish:
     if: inputs.mode == 'publish'

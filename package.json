@@ -24,6 +24,7 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "release:canonical:check": "node scripts/release-canonical-packages.mjs --dry-run",
+    "release:canonical:smoke": "node scripts/smoke-canonical-packages.mjs",
     "typecheck": "tsc -b --pretty false",
     "lint": "eslint . --max-warnings 0",
     "format": "prettier --write .",

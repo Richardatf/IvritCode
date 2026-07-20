@@ -2,25 +2,17 @@ import { spawnSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
+import { canonicalPackageNames, releaseOrder } from "./canonical-package-set.mjs";
 
 const publish = process.argv.includes("--publish");
 const root = process.cwd();
-const releaseOrder = [
-  "packages/unicode",
-  "packages/qec-spec",
-  "packages/core",
-  "packages/ivrit-compiler",
-  "packages/qec-security",
-  "packages/qec-provenance",
-  "packages/path-router",
-  "packages/qec-core",
-];
-
-const canonicalPackages = new Set(["@ivritcode/core", "@qec/spec", "@qec/core"]);
+const canonicalPackages = new Set(canonicalPackageNames);
 
 function runNpm(args, cwd) {
-  const command = process.platform === "win32" ? "npm.cmd" : "npm";
-  const result = spawnSync(command, args, {
+  const npmEntry = process.env.npm_execpath;
+  const command = process.platform === "win32" && npmEntry ? process.execPath : "npm";
+  const commandArgs = command === process.execPath ? [npmEntry, ...args] : args;
+  const result = spawnSync(command, commandArgs, {
     cwd,
     encoding: "utf8",
   });
