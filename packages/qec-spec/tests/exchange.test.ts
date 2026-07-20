@@ -8,6 +8,8 @@ import {
   validateRunPassport,
   inspectRunPassport,
   contentHash,
+  createRunPassport,
+  serializeRunPassport,
   QEC_RUN_PASSPORT_VERSION,
 } from "../src/index.js";
 
@@ -33,6 +35,32 @@ describe("IvritCode exchange", () => {
     expect(validateIvritCodeExchange({ ...fixture, schemaVersion: "future" })).toBe(false);
     expect(validateIvritCodeExchange({ ...fixture, finalState: [1] })).toBe(false);
   });
+});
+
+it("builds and serializes byte-stable passports canonically", () => {
+  const input = {
+    source: fixture.source,
+    seed: fixture.seed,
+    initialState: fixture.initialState,
+    finalState: fixture.finalState,
+    hiddenKey: fixture.hiddenKey,
+    patternShape: fixture.patternShape,
+    returningLetters: fixture.returningLetters,
+    gates: fixture.gates,
+    trace: [
+      {
+        letter: "א" as const,
+        before: fixture.initialState,
+        after: fixture.finalState,
+        changedRegisters: [22],
+      },
+    ],
+  };
+  const first = createRunPassport(input),
+    second = createRunPassport(input);
+  expect(first).toEqual(second);
+  expect(serializeRunPassport(first)).toBe(serializeRunPassport(second));
+  expect(JSON.parse(serializeRunPassport(first))).toEqual(first);
 });
 
 it("validates a complete deterministic run passport", () => {

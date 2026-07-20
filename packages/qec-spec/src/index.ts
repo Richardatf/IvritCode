@@ -102,6 +102,23 @@ export interface RunPassportInspection {
   readonly valid: boolean;
   readonly errors: readonly string[];
 }
+export interface RunPassportTraceInput {
+  readonly letter: HebrewLetter;
+  readonly before: readonly number[];
+  readonly after: readonly number[];
+  readonly changedRegisters: readonly number[];
+}
+export interface RunPassportInput {
+  readonly source: string;
+  readonly seed: number;
+  readonly initialState: readonly number[];
+  readonly finalState: readonly number[];
+  readonly hiddenKey: HebrewLetter;
+  readonly patternShape: string;
+  readonly returningLetters: readonly HebrewLetter[];
+  readonly gates: readonly string[];
+  readonly trace: readonly RunPassportTraceInput[];
+}
 const validState = (value: unknown): value is readonly number[] =>
   Array.isArray(value) &&
   value.length === 23 &&
@@ -161,6 +178,52 @@ export function inspectRunPassport(value: unknown): RunPassportInspection {
 }
 export function validateRunPassport(value: unknown): value is QECRunPassport {
   return inspectRunPassport(value).valid;
+}
+export function createRunPassport(input: RunPassportInput): QECRunPassport {
+  const trace: RunPassportTraceEvent[] = input.trace.map((event, sequence) => ({
+    sequence,
+    letter: event.letter,
+    before: [...event.before],
+    after: [...event.after],
+    beforeHash: contentHash(event.before),
+    afterHash: contentHash(event.after),
+    changedRegisters: [...event.changedRegisters],
+  }));
+  const traceHash = contentHash(trace);
+  const passport: QECRunPassport = {
+    schemaVersion: QEC_RUN_PASSPORT_VERSION,
+    runId: traceHash,
+    engineVersion: IVRIT_ENGINE_VERSION,
+    pathMapVersion: QEC_PATH_MAP_VERSION,
+    manifestationVersion: QEC_MANIFESTATION_VERSION,
+    seed: input.seed,
+    traceHash,
+    source: input.source,
+    sourceHash: contentHash({ source: input.source }),
+    initialState: [...input.initialState],
+    finalState: [...input.finalState],
+    hiddenKey: input.hiddenKey,
+    patternShape: input.patternShape,
+    returningLetters: [...input.returningLetters],
+    gates: [...input.gates],
+    trace,
+    validation: {
+      status: "valid",
+      registerCount: 23,
+      traceComplete: true,
+      deterministic: true,
+    },
+  };
+  const inspection = inspectRunPassport(passport);
+  if (!inspection.valid)
+    throw new TypeError(`Cannot create Run Passport: ${inspection.errors.join(", ")}`);
+  return passport;
+}
+export function serializeRunPassport(passport: QECRunPassport): string {
+  const inspection = inspectRunPassport(passport);
+  if (!inspection.valid)
+    throw new TypeError(`Cannot serialize Run Passport: ${inspection.errors.join(", ")}`);
+  return `${JSON.stringify(passport, null, 2)}\n`;
 }
 export type PrivacyLabel = "public" | "private" | "sensitive";
 export type ValidationStatus = "pending" | "valid" | "invalid";

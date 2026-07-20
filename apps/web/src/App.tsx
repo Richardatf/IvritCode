@@ -29,9 +29,10 @@ import {
   IVRIT_LANGUAGE_SPEC,
   QEC_MANIFESTATION_VERSION,
   QEC_PATH_MAP_VERSION,
-  QEC_RUN_PASSPORT_VERSION,
   QEC_SCHEMA_VERSION,
   contentHash,
+  createRunPassport,
+  serializeRunPassport,
   type IvritCodeExchange,
   type QECRunPassport,
 } from "@qec/spec";
@@ -268,35 +269,22 @@ export function App() {
       demoResult.trace.some((event) => !event.before || !event.after)
     )
       return undefined;
-    const trace = demoResult.trace.map((event, sequence) => ({
-      sequence,
-      letter: event.instruction.letter,
-      before: event.before!,
-      after: event.after!,
-      beforeHash: contentHash(event.before),
-      afterHash: contentHash(event.after),
-      changedRegisters: event.changedRegisters.map((change) => change.index),
-    }));
-    const traceHash = contentHash(trace);
-    return {
-      schemaVersion: QEC_RUN_PASSPORT_VERSION,
-      runId: traceHash,
-      engineVersion: IVRIT_ENGINE_VERSION,
-      pathMapVersion: QEC_PATH_MAP_VERSION,
-      manifestationVersion: QEC_MANIFESTATION_VERSION,
-      seed: demoResult.context.deterministicSeed,
-      traceHash,
+    return createRunPassport({
       source: demoSource,
-      sourceHash: contentHash({ source: demoSource }),
+      seed: demoResult.context.deterministicSeed,
       initialState: makeAlphabetState(demoSource),
       finalState: demoResult.finalState,
       hiddenKey: constellation.hiddenKey,
       patternShape: constellation.patternShape,
       returningLetters: constellation.returningLetters,
       gates: constellation.strongestGates,
-      trace,
-      validation: { status: "valid", registerCount: 23, traceComplete: true, deterministic: true },
-    };
+      trace: demoResult.trace.map((event) => ({
+        letter: event.instruction.letter,
+        before: event.before!,
+        after: event.after!,
+        changedRegisters: event.changedRegisters.map((change) => change.index),
+      })),
+    });
   }, [demoResult, constellation, demoSource]);
   const passportUrl = runPassport
     ? `https://quantumetzchaim.com/?passport=${encodeURIComponent(JSON.stringify(runPassport))}#ivritcode`
@@ -304,7 +292,7 @@ export function App() {
   const downloadPassport = () => {
     if (!runPassport) return;
     const url = URL.createObjectURL(
-      new Blob([`${JSON.stringify(runPassport, null, 2)}\n`], { type: "application/json" }),
+      new Blob([serializeRunPassport(runPassport)], { type: "application/json" }),
     );
     const link = document.createElement("a");
     link.href = url;
