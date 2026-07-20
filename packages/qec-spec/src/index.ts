@@ -108,8 +108,7 @@ const validState = (value: unknown): value is readonly number[] =>
   value.every((entry) => Number.isInteger(entry) && entry >= 0 && entry < 22);
 export function inspectRunPassport(value: unknown): RunPassportInspection {
   const errors: string[] = [];
-  if (!value || typeof value !== "object")
-    return { valid: false, errors: ["object-required"] };
+  if (!value || typeof value !== "object") return { valid: false, errors: ["object-required"] };
   const item = value as Partial<QECRunPassport>;
   const exchange = { ...item, schemaVersion: IVRIT_EXCHANGE_VERSION };
   if (item.schemaVersion !== QEC_RUN_PASSPORT_VERSION) errors.push("schema-version");
