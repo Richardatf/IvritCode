@@ -137,8 +137,10 @@ export function App() {
     [demoInputError, setDemoInputError] = useState(""),
     [demoJourneyStep, setDemoJourneyStep] = useState(0),
     [demoJourneyPlaying, setDemoJourneyPlaying] = useState(false),
+    [showConstellationReading, setShowConstellationReading] = useState(false),
     fileRef = useRef<HTMLInputElement>(null),
-    demoEditorRef = useRef<HTMLTextAreaElement>(null);
+    demoEditorRef = useRef<HTMLTextAreaElement>(null),
+    constellationReadingRef = useRef<HTMLElement>(null);
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     localStorage.setItem("ivritcode-theme", theme);
@@ -267,6 +269,7 @@ export function App() {
       }),
     );
     setShowDemoSteps(false);
+    setShowConstellationReading(false);
     setDemoJourneyStep(0);
     setDemoJourneyPlaying(false);
   };
@@ -584,7 +587,24 @@ export function App() {
                   authority.
                 </p>
                 <div className="toolbar resonance-actions">
-                  <button className="primary">Read the Constellation</button>
+                  <button
+                    className="primary"
+                    aria-expanded={showConstellationReading}
+                    aria-controls="constellation-reading"
+                    onClick={() => {
+                      const opening = !showConstellationReading;
+                      setShowConstellationReading(opening);
+                      if (opening)
+                        window.requestAnimationFrame(() =>
+                          constellationReadingRef.current?.scrollIntoView({
+                            behavior: "smooth",
+                            block: "nearest",
+                          }),
+                        );
+                    }}
+                  >
+                    {showConstellationReading ? "Close the Reading" : "Read the Constellation"}
+                  </button>
                   <a className="button primary" href={quantumEtzChaimUrl}>
                     Explore in Quantum Etz Chaim
                   </a>
@@ -645,6 +665,82 @@ export function App() {
                     Try Another Word
                   </button>
                 </div>
+                {showConstellationReading && (
+                  <section
+                    className="constellation-reading"
+                    id="constellation-reading"
+                    ref={constellationReadingRef}
+                    aria-labelledby="constellation-reading-title"
+                  >
+                    <div>
+                      <p className="eyebrow">Reflective reading / deterministic evidence</p>
+                      <h4 id="constellation-reading-title">
+                        {PATTERN_NAMES[constellation.patternShape]}
+                      </h4>
+                      <p className="reading-lede">{constellation.summary}</p>
+                    </div>
+                    <div className="reading-narrative">
+                      <article>
+                        <small>Orientation</small>
+                        <strong>
+                          <span lang="he">{constellation.hiddenKey}</span> ·{" "}
+                          {
+                            LETTER_ARCHETYPES[HEBREW_LETTERS.indexOf(constellation.hiddenKey)]
+                              ?.title
+                          }
+                        </strong>
+                        <p>
+                          The hidden register supplies the stable orientation from which this result
+                          is read.
+                        </p>
+                      </article>
+                      <article>
+                        <small>Movement</small>
+                        <strong>{constellation.changedRegisters} of 22 letters changed</strong>
+                        <p>
+                          {constellation.returningLetters.length
+                            ? `${constellation.returningLetters.length} letters returned to their own positions: ${constellation.returningLetters.join(" · ")}.`
+                            : "No letter returned exactly to its starting position."}
+                        </p>
+                      </article>
+                      <article>
+                        <small>Gathering</small>
+                        <strong lang="he">
+                          {constellation.dominantLetters.join(" · ") || "Open field"}
+                        </strong>
+                        <p>
+                          {constellation.dominantLetters.length
+                            ? "These destinations receive the strongest chorus in the completed state."
+                            : `The result remains distributed across ${constellation.distinctValueCount} distinct letters.`}
+                        </p>
+                      </article>
+                      <article>
+                        <small>Relations</small>
+                        <strong lang="he">
+                          {constellation.strongestGates.join(" · ") || "No repeated gate"}
+                        </strong>
+                        <p>
+                          These are the strongest adjacent letter-pairs in the executed program.
+                        </p>
+                      </article>
+                    </div>
+                    <dl className="reading-scores">
+                      <div>
+                        <dt>Symmetry</dt>
+                        <dd>{Math.round(constellation.symmetryScore * 100)}%</dd>
+                      </div>
+                      <div>
+                        <dt>Rotation</dt>
+                        <dd>{Math.round(constellation.rotationScore * 100)}%</dd>
+                      </div>
+                      <div>
+                        <dt>Dispersion</dt>
+                        <dd>{Math.round(constellation.dispersionScore * 100)}%</dd>
+                      </div>
+                    </dl>
+                    <p className="reading-caveat">{constellation.warnings[0]}</p>
+                  </section>
+                )}
               </>
             )}
           </div>

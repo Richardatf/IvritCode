@@ -648,6 +648,84 @@ main {
 .demo-register.self-return {
   border-color: var(--gold);
 }
+.constellation-reading {
+  margin-top: 1rem;
+  padding: clamp(1rem, 3vw, 1.6rem);
+  border: 1px solid var(--gold);
+  border-radius: 12px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--gold) 8%, var(--surface)),
+    var(--panel-2)
+  );
+  box-shadow: 0 18px 55px rgb(0 0 0 / 18%);
+}
+.constellation-reading h4 {
+  margin: 0.2rem 0 0.55rem;
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+}
+.reading-lede {
+  max-width: 70ch;
+  font-size: 1.05rem;
+}
+.reading-narrative {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 1.2rem 0;
+}
+.reading-narrative article {
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+}
+.reading-narrative small {
+  display: block;
+  color: var(--gold);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.reading-narrative strong {
+  display: block;
+  margin: 0.4rem 0;
+}
+.reading-narrative p,
+.reading-caveat {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+}
+.reading-scores {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+  margin: 0;
+}
+.reading-scores div {
+  padding: 0.8rem;
+  border-left: 2px solid var(--indigo);
+  background: var(--panel);
+}
+.reading-scores dt {
+  color: var(--muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+.reading-scores dd {
+  margin: 0.2rem 0 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+.reading-caveat {
+  padding-top: 1rem;
+  font-size: 0.82rem;
+}
+@media (max-width: 680px) {
+  .reading-narrative {
+    grid-template-columns: 1fr;
+  }
+}
 .demo-register.changed strong {
   color: var(--indigo);
 }

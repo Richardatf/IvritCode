@@ -18,6 +18,17 @@ test("builds pointed Hebrew, deletes a grapheme, and animates the constellation"
   await page.getByRole("button", { name: "Run the letters" }).click();
   await expect(page.getByRole("heading", { name: "The constellation has formed." })).toBeVisible();
   await expect(page.getByLabel("Circular 22-letter constellation")).toBeVisible();
+  await page.getByRole("button", { name: "Read the Constellation" }).click();
+  await expect(
+    page.getByRole("heading", {
+      name: /The (Full Spectrum|Chorus|Mirror|Return|Spiral|Flame|Still Point|Open Field)/,
+    }),
+  ).toBeVisible();
+  await expect(page.getByText("Reflective reading / deterministic evidence")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Close the Reading" })).toHaveAttribute(
+    "aria-expanded",
+    "true",
+  );
   await expect(page.getByRole("link", { name: "Explore in Quantum Etz Chaim" })).toHaveAttribute(
     "href",
     /https:\/\/quantumetzchaim\.com\/\?exchange=/,
