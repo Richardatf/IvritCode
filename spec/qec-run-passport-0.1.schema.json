@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ivritcode.org/spec/qec-run-passport-0.1.schema.json",
+  "title": "QEC Run Passport 0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "runId",
+    "engineVersion",
+    "pathMapVersion",
+    "manifestationVersion",
+    "seed",
+    "traceHash",
+    "source",
+    "sourceHash",
+    "initialState",
+    "finalState",
+    "hiddenKey",
+    "patternShape",
+    "returningLetters",
+    "gates",
+    "trace",
+    "validation"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "qec-run-passport-0.1" },
+    "runId": { "$ref": "#/$defs/hash" },
+    "engineVersion": { "const": "1.0.0" },
+    "pathMapVersion": { "const": "qec-path-map-0.3.0" },
+    "manifestationVersion": { "const": "qec-manifestation-0.2" },
+    "seed": { "type": "integer", "minimum": 0, "maximum": 21 },
+    "traceHash": { "$ref": "#/$defs/hash" },
+    "source": { "type": "string", "minLength": 1, "maxLength": 2048 },
+    "sourceHash": { "$ref": "#/$defs/hash" },
+    "initialState": { "$ref": "#/$defs/state" },
+    "finalState": { "$ref": "#/$defs/state" },
+    "hiddenKey": { "type": "string", "pattern": "^[א-ת]$" },
+    "patternShape": { "type": "string", "minLength": 1 },
+    "returningLetters": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[א-ת]$" }
+    },
+    "gates": { "type": "array", "items": { "type": "string" } },
+    "trace": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/event" } },
+    "validation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "registerCount", "traceComplete", "deterministic"],
+      "properties": {
+        "status": { "const": "valid" },
+        "registerCount": { "const": 23 },
+        "traceComplete": { "const": true },
+        "deterministic": { "const": true }
+      }
+    }
+  },
+  "$defs": {
+    "hash": { "type": "string", "pattern": "^fnv1a32-[0-9a-f]{8}$" },
+    "state": {
+      "type": "array",
+      "minItems": 23,
+      "maxItems": 23,
+      "items": { "type": "integer", "minimum": 0, "maximum": 21 }
+    },
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sequence",
+        "letter",
+        "before",
+        "after",
+        "beforeHash",
+        "afterHash",
+        "changedRegisters"
+      ],
+      "properties": {
+        "sequence": { "type": "integer", "minimum": 0 },
+        "letter": { "type": "string", "pattern": "^[א-ת]$" },
+        "before": { "$ref": "#/$defs/state" },
+        "after": { "$ref": "#/$defs/state" },
+        "beforeHash": { "$ref": "#/$defs/hash" },
+        "afterHash": { "$ref": "#/$defs/hash" },
+        "changedRegisters": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "integer", "minimum": 0, "maximum": 22 }
+        }
+      }
+    }
+  }
+}

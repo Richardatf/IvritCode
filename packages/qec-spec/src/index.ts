@@ -6,6 +6,7 @@ export const IVRIT_EXCHANGE_VERSION = "ivritcode-exchange-0.2" as const;
 export const IVRIT_ENGINE_VERSION = "1.0.0" as const;
 export const QEC_PATH_MAP_VERSION = "qec-path-map-0.3.0" as const;
 export const QEC_MANIFESTATION_VERSION = "qec-manifestation-0.2" as const;
+export const QEC_RUN_PASSPORT_VERSION = "qec-run-passport-0.1" as const;
 export const HEBREW_LETTERS = [
   "א",
   "ב",
@@ -75,6 +76,57 @@ export function validateIvritCodeExchange(value: unknown): value is IvritCodeExc
     item.returningLetters.every((letter) => HEBREW_LETTERS.includes(letter)) &&
     Array.isArray(item.gates) &&
     item.gates.every((gate) => typeof gate === "string")
+  );
+}
+export interface RunPassportTraceEvent {
+  readonly sequence: number;
+  readonly letter: HebrewLetter;
+  readonly before: readonly number[];
+  readonly after: readonly number[];
+  readonly beforeHash: string;
+  readonly afterHash: string;
+  readonly changedRegisters: readonly number[];
+}
+export interface QECRunPassport extends Omit<IvritCodeExchange, "schemaVersion"> {
+  readonly schemaVersion: typeof QEC_RUN_PASSPORT_VERSION;
+  readonly runId: string;
+  readonly trace: readonly RunPassportTraceEvent[];
+  readonly validation: {
+    readonly status: "valid";
+    readonly registerCount: 23;
+    readonly traceComplete: true;
+    readonly deterministic: true;
+  };
+}
+const validState = (value: unknown): value is readonly number[] =>
+  Array.isArray(value) &&
+  value.length === 23 &&
+  value.every((entry) => Number.isInteger(entry) && entry >= 0 && entry < 22);
+export function validateRunPassport(value: unknown): value is QECRunPassport {
+  if (!value || typeof value !== "object") return false;
+  const item = value as Partial<QECRunPassport>;
+  const exchange = { ...item, schemaVersion: IVRIT_EXCHANGE_VERSION };
+  return (
+    item.schemaVersion === QEC_RUN_PASSPORT_VERSION &&
+    typeof item.runId === "string" &&
+    item.runId === item.traceHash &&
+    validateIvritCodeExchange(exchange) &&
+    Array.isArray(item.trace) &&
+    item.trace.length > 0 &&
+    item.trace.every(
+      (event, index) =>
+        event.sequence === index &&
+        HEBREW_LETTERS.includes(event.letter) &&
+        validState(event.before) &&
+        validState(event.after) &&
+        typeof event.beforeHash === "string" &&
+        typeof event.afterHash === "string" &&
+        Array.isArray(event.changedRegisters),
+    ) &&
+    item.validation?.status === "valid" &&
+    item.validation.registerCount === 23 &&
+    item.validation.traceComplete === true &&
+    item.validation.deterministic === true
   );
 }
 export type PrivacyLabel = "public" | "private" | "sensitive";
