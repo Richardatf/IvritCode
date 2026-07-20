@@ -9,7 +9,9 @@ Etz Chaim:
 
 Their six internal runtime dependencies are released by the same workflow so a
 normal `npm install` has a complete dependency graph. The release script packs
-and inspects every artifact before publishing in dependency order.
+and inspects every artifact before publishing in dependency order. Verification
+also installs those tarballs into a temporary project and imports each canonical
+API without relying on monorepo workspaces.
 
 ## npm bootstrap
 
