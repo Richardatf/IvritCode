@@ -34,6 +34,12 @@ function run(executable, args, cwd) {
 }
 
 const sandbox = await mkdtemp(path.join(tmpdir(), "ivritcode-canonical-smoke-"));
+const resolvedSandbox = path.resolve(sandbox);
+const resolvedTemp = path.resolve(tmpdir());
+
+if (!resolvedSandbox.startsWith(`${resolvedTemp}${path.sep}`)) {
+  throw new Error(`Refusing to use non-temporary path: ${resolvedSandbox}`);
+}
 
 try {
   const dependencies = {};
@@ -70,10 +76,5 @@ try {
   console.log(run("node", ["--input-type=module", "--eval", smokeProgram], sandbox));
   console.log("Canonical package consumer smoke test passed.");
 } finally {
-  const resolvedSandbox = path.resolve(sandbox);
-  const resolvedTemp = path.resolve(tmpdir());
-  if (!resolvedSandbox.startsWith(`${resolvedTemp}${path.sep}`)) {
-    throw new Error(`Refusing to remove non-temporary path: ${resolvedSandbox}`);
-  }
   await rm(resolvedSandbox, { recursive: true, force: true });
 }
