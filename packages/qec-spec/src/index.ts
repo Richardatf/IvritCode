@@ -98,19 +98,24 @@ export interface QECRunPassport extends Omit<IvritCodeExchange, "schemaVersion">
     readonly deterministic: true;
   };
 }
+export interface RunPassportInspection {
+  readonly valid: boolean;
+  readonly errors: readonly string[];
+}
 const validState = (value: unknown): value is readonly number[] =>
   Array.isArray(value) &&
   value.length === 23 &&
   value.every((entry) => Number.isInteger(entry) && entry >= 0 && entry < 22);
-export function validateRunPassport(value: unknown): value is QECRunPassport {
-  if (!value || typeof value !== "object") return false;
+export function inspectRunPassport(value: unknown): RunPassportInspection {
+  const errors: string[] = [];
+  if (!value || typeof value !== "object")
+    return { valid: false, errors: ["object-required"] };
   const item = value as Partial<QECRunPassport>;
   const exchange = { ...item, schemaVersion: IVRIT_EXCHANGE_VERSION };
-  return (
-    item.schemaVersion === QEC_RUN_PASSPORT_VERSION &&
-    typeof item.runId === "string" &&
-    item.runId === item.traceHash &&
-    validateIvritCodeExchange(exchange) &&
+  if (item.schemaVersion !== QEC_RUN_PASSPORT_VERSION) errors.push("schema-version");
+  if (!validateIvritCodeExchange(exchange)) errors.push("exchange-contract");
+  if (!Array.isArray(item.trace) || !item.trace.length) errors.push("trace-required");
+  const traceShape =
     Array.isArray(item.trace) &&
     item.trace.length > 0 &&
     item.trace.every(
@@ -122,12 +127,41 @@ export function validateRunPassport(value: unknown): value is QECRunPassport {
         typeof event.beforeHash === "string" &&
         typeof event.afterHash === "string" &&
         Array.isArray(event.changedRegisters),
-    ) &&
-    item.validation?.status === "valid" &&
-    item.validation.registerCount === 23 &&
-    item.validation.traceComplete === true &&
-    item.validation.deterministic === true
-  );
+    );
+  if (!traceShape) errors.push("trace-shape");
+  if (
+    item.validation?.status !== "valid" ||
+    item.validation.registerCount !== 23 ||
+    item.validation.traceComplete !== true ||
+    item.validation.deterministic !== true
+  )
+    errors.push("validation-claims");
+  if (traceShape) {
+    const trace = item.trace!;
+    trace.forEach((event, index) => {
+      if (event.beforeHash !== contentHash(event.before)) errors.push(`event-${index}-before-hash`);
+      if (event.afterHash !== contentHash(event.after)) errors.push(`event-${index}-after-hash`);
+      if (index > 0 && JSON.stringify(event.before) !== JSON.stringify(trace[index - 1]!.after))
+        errors.push(`event-${index}-chain`);
+    });
+    if (
+      validState(item.initialState) &&
+      JSON.stringify(trace[0]!.before) !== JSON.stringify(item.initialState)
+    )
+      errors.push("initial-state-chain");
+    if (
+      validState(item.finalState) &&
+      JSON.stringify(trace.at(-1)!.after) !== JSON.stringify(item.finalState)
+    )
+      errors.push("final-state-chain");
+    if (item.traceHash !== contentHash(trace)) errors.push("trace-hash");
+  }
+  if (item.sourceHash !== contentHash({ source: item.source })) errors.push("source-hash");
+  if (item.runId !== item.traceHash) errors.push("run-id");
+  return { valid: errors.length === 0, errors };
+}
+export function validateRunPassport(value: unknown): value is QECRunPassport {
+  return inspectRunPassport(value).valid;
 }
 export type PrivacyLabel = "public" | "private" | "sensitive";
 export type ValidationStatus = "pending" | "valid" | "invalid";

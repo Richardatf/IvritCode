@@ -6,6 +6,8 @@ import {
   QEC_PATH_MAP_VERSION,
   validateIvritCodeExchange,
   validateRunPassport,
+  inspectRunPassport,
+  contentHash,
   QEC_RUN_PASSPORT_VERSION,
 } from "../src/index.js";
 
@@ -34,23 +36,30 @@ describe("IvritCode exchange", () => {
 });
 
 it("validates a complete deterministic run passport", () => {
+  const trace = [
+    {
+      sequence: 0,
+      letter: "א",
+      before: fixture.initialState,
+      after: fixture.finalState,
+      beforeHash: contentHash(fixture.initialState),
+      afterHash: contentHash(fixture.finalState),
+      changedRegisters: [22],
+    },
+  ];
+  const traceHash = contentHash(trace);
   const passport = {
     ...fixture,
     schemaVersion: QEC_RUN_PASSPORT_VERSION,
-    runId: fixture.traceHash,
-    trace: [
-      {
-        sequence: 0,
-        letter: "א",
-        before: fixture.initialState,
-        after: fixture.finalState,
-        beforeHash: "fnv1a32-11111111",
-        afterHash: "fnv1a32-22222222",
-        changedRegisters: [0],
-      },
-    ],
+    sourceHash: contentHash({ source: fixture.source }),
+    traceHash,
+    runId: traceHash,
+    trace,
     validation: { status: "valid", registerCount: 23, traceComplete: true, deterministic: true },
   };
   expect(validateRunPassport(passport)).toBe(true);
-  expect(validateRunPassport({ ...passport, runId: "fnv1a32-wrong" })).toBe(false);
+  expect(inspectRunPassport({ ...passport, finalState: fixture.initialState })).toMatchObject({
+    valid: false,
+    errors: ["final-state-chain"],
+  });
 });
