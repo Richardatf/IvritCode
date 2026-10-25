@@ -25,7 +25,10 @@ For example:
 ```
 
 With `r10` initially zero, the result is `-10` in three metered steps. Run this
-source through the existing QEC playground or the `runQEC` API. The original
+source through the existing QEC playground or the `runQEC` API. On the website,
+choose **Enter the IvritCode Observatory**, then expand **Advanced: experimental
+ivritcode-0.1 compiler and QEC details**. The default example exercises all three
+arithmetic operations. The original
 letter-only Observatory VM and its CLI use their own existing semantics.
 
 Both the TypeScript Python representation and the Python AST bridge emit the
