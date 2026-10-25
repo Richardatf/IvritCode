@@ -12,7 +12,7 @@ import sys
 from typing import Any
 
 SAFE_REGISTER = re.compile(r"r(?:[1-9]|1\d|2[0-2])\Z")
-ALLOWED_NODES = (ast.Module, ast.Assign, ast.Name, ast.Store, ast.Load, ast.BinOp, ast.Add, ast.Call, ast.Constant, ast.Expr)
+ALLOWED_NODES = (ast.Module, ast.Assign, ast.Name, ast.Store, ast.Load, ast.BinOp, ast.Add, ast.Sub, ast.Mult, ast.Call, ast.Constant, ast.Expr)
 
 
 class UnsafeIRError(ValueError):
@@ -28,12 +28,14 @@ def _register(value: object) -> str:
 def build_module(ir: list[dict[str, Any]]) -> ast.Module:
     body: list[ast.stmt] = []
     for instruction in ir:
-        if instruction.get("operation") != "add_int":
+        operations = {"add_int": ast.Add, "subtract_int": ast.Sub, "multiply_int": ast.Mult}
+        operation = instruction.get("operation")
+        if operation not in operations:
             raise UnsafeIRError(f"unsupported operation: {instruction.get('operation')!r}")
         register = _register(instruction.get("register"))
         value = instruction.get("value")
-        if isinstance(value, bool) or not isinstance(value, int):
-            raise UnsafeIRError("add_int requires an integer literal")
+        if isinstance(value, bool) or not isinstance(value, int) or abs(value) > 2**53 - 1:
+            raise UnsafeIRError("integer arithmetic requires a safe integer literal")
         body.append(
             ast.Assign(
                 targets=[ast.Name(id=register, ctx=ast.Store())],
@@ -43,7 +45,7 @@ def build_module(ir: list[dict[str, Any]]) -> ast.Module:
                         args=[ast.Name(id=register, ctx=ast.Load())],
                         keywords=[],
                     ),
-                    op=ast.Add(),
+                    op=operations[operation](),
                     right=ast.Constant(value=value),
                 ),
             )

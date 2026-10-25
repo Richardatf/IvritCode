@@ -36,3 +36,37 @@ describe("QEC execution contract", () => {
     expect(second.trace.replayHash).toBe(first.trace.replayHash);
   });
 });
+
+describe("integer arithmetic execution", () => {
+  it("executes a multi-register program and replays it", () => {
+    const source = "יִ $r10, 8\nכִ $r10, 3\nלִ $r10, -2\nיִ $r22, 4";
+    const first = runQEC(source, { r10: 2 });
+    expect(first.result.outputs).toEqual({ r10: -14, r22: 4 });
+    expect(first.result.budgetUsed.steps).toBe(4);
+    expect(first.result.warnings).toEqual([]);
+    expect(runQEC(source, { r10: 2 }).trace.replayHash).toBe(first.trace.replayHash);
+  });
+  it.each(["כִ $r23, 2", "לִ $r1, 1.5", "יִ $r1, 9007199254740992"])(
+    "rejects invalid source before executing: %s",
+    (source) => {
+      expect(() => runQEC(source)).toThrow(/VerificationDenied/);
+    },
+  );
+  it.each([Infinity, NaN, Number.MAX_SAFE_INTEGER + 1])("rejects unsafe inputs %s", (r1) => {
+    expect(() => runQEC("לִ $r1, 2", { r1 })).toThrow(/ArithmeticError/);
+  });
+  it("rejects integer overflow", () => {
+    expect(() => runQEC("יִ $r1, 1", { r1: Number.MAX_SAFE_INTEGER })).toThrow(
+      /unsafe integer result/,
+    );
+    expect(() => runQEC("לִ $r1, 2", { r1: Number.MAX_SAFE_INTEGER })).toThrow(
+      /unsafe integer result/,
+    );
+  });
+});
+
+it("declares the registers used by arithmetic programs", () => {
+  const manifest = createManifest("כִ $r10, 1\nלִ $r22, 2\nיִ $r10, 3");
+  expect(manifest.declaredInputs).toEqual(["r10", "r22"]);
+  expect(manifest.declaredOutputs).toEqual(["r10", "r22"]);
+});

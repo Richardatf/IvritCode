@@ -26,3 +26,19 @@ def test_disallowed_nodes_are_rejected(node):
 def test_unsupported_ir_is_rejected():
     with pytest.raises(UnsafeIRError):
         build_module([{"operation": "exec", "source": "open('x')"}])
+
+
+@pytest.mark.parametrize("operation,symbol,node", [
+    ("subtract_int", "-", "Sub"),
+    ("multiply_int", "*", "Mult"),
+])
+def test_integer_arithmetic_backends(operation, symbol, node):
+    output = compile_ir([{"operation": operation, "register": "r22", "value": -3}])
+    assert output["source"] == f"r22 = int(r22) {symbol} -3"
+    assert node in output["ast"]
+
+
+@pytest.mark.parametrize("value", [True, 1.5, 2**53, -(2**53)])
+def test_integer_literals_match_javascript_safe_range(value):
+    with pytest.raises(UnsafeIRError):
+        compile_ir([{"operation": "multiply_int", "register": "r1", "value": value}])

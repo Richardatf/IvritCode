@@ -9,7 +9,7 @@ import {
   type Token,
 } from "@qec/spec";
 export interface QECIRInstruction {
-  readonly operation: "add_int" | "legacy_opcode";
+  readonly operation: "add_int" | "subtract_int" | "multiply_int" | "legacy_opcode";
   readonly opcode: string;
   readonly register?: string;
   readonly value?: number;
@@ -21,6 +21,11 @@ export interface Compilation {
   readonly pythonSource: string;
   readonly diagnostics: readonly string[];
 }
+const integerOperations = {
+  י: { operation: "add_int", pythonOperator: "Add", symbol: "+" },
+  כ: { operation: "subtract_int", pythonOperator: "Sub", symbol: "-" },
+  ל: { operation: "multiply_int", pythonOperator: "Mult", symbol: "*" },
+} as const;
 const finalForms: Readonly<Record<string, string>> = { ך: "כ", ם: "מ", ן: "נ", ף: "פ", ץ: "צ" };
 const codePoints = (text: string) =>
   [...text].map((item) => `U+${item.codePointAt(0)!.toString(16).toUpperCase().padStart(4, "0")}`);
@@ -33,7 +38,7 @@ export const tokenize = (source: string): readonly Token[] => {
   );
   const controlMarks = new Set(IVRIT_LANGUAGE_SPEC.controlMarks.map((item) => item.mark));
   const pattern =
-    /#[^\n]*|"(?:\\.|[^"\\])*"|\$r(?:[1-9]|1\d|2[0-2])|-?\d+\.\d+|-?\d+|,|\n|[A-Za-z_][A-Za-z0-9_]*|[\u05D0-\u05EA]|[\u0591-\u05C7]/gu;
+    /#[^\n]*|"(?:\\.|[^"\\])*"|\$r(?:2[0-2]|1\d|[1-9])(?!\w)|-?\d+\.\d+|-?\d+|,|\n|[A-Za-z_][A-Za-z0-9_]*|[\u05D0-\u05EA]|[\u0591-\u05C7]/gu;
   for (const match of source.matchAll(pattern)) {
     const text = match[0],
       normalized = text.normalize("NFD"),
@@ -75,6 +80,15 @@ export const compileIvrit = (source: string): Compilation => {
     diagnostics: string[] = [],
     instructions: IvritInstruction[] = [],
     ir: QECIRInstruction[] = [];
+  let previousEnd = 0;
+  for (const token of [...tokens, { start: source.length, end: source.length }]) {
+    const gap = source.slice(previousEnd, token.start);
+    if (/\S/u.test(gap))
+      diagnostics.push(
+        `Unexpected source text at [${previousEnd},${token.start}): ${JSON.stringify(gap)}.`,
+      );
+    previousEnd = token.end;
+  }
   for (const token of tokens) {
     if (token.kind === "identifier" && /[\u0591-\u05C7]/u.test(token.text))
       diagnostics.push(
@@ -132,12 +146,29 @@ export const compileIvrit = (source: string): Compilation => {
         )!;
         return { name: definition.name, semantic: definition.semantic };
       });
+    const arithmetic = integerOperations[opcode as keyof typeof integerOperations];
+    const next = tokens[cursor + 3];
+    const validEnd = !next || ["newline", "comment", "control", "letter"].includes(next.kind);
     if (
-      opcode === "י" &&
+      arithmetic &&
+      modifierDefinition?.name === "hiriq" &&
+      (register?.kind !== "register" ||
+        comma?.kind !== "comma" ||
+        integer?.kind !== "integer" ||
+        !Number.isSafeInteger(Number(integer.text)) ||
+        !validEnd)
+    )
+      diagnostics.push(
+        `Invalid integer operands at ${token.start}: expected $r1 through $r22, a comma, and a safe integer literal.`,
+      );
+    if (
+      arithmetic &&
       modifierDefinition?.name === "hiriq" &&
       register?.kind === "register" &&
       comma?.kind === "comma" &&
-      integer?.kind === "integer"
+      integer?.kind === "integer" &&
+      Number.isSafeInteger(Number(integer.text)) &&
+      validEnd
     ) {
       instructions.push({
         opcode,
@@ -152,7 +183,7 @@ export const compileIvrit = (source: string): Compilation => {
         end: integer.end,
       });
       ir.push({
-        operation: "add_int",
+        operation: arithmetic.operation,
         opcode,
         register: register.text.slice(1),
         value: Number(integer.text),
@@ -189,14 +220,14 @@ export const compileIvrit = (source: string): Compilation => {
     contentHash: contentHash(programBase),
   };
   const pythonAst = ir.map((item) =>
-    item.operation === "add_int"
+    item.operation !== "legacy_opcode"
       ? {
           type: "Assign",
           target: { type: "Name", id: item.register },
           value: {
             type: "BinOp",
             left: { type: "Call", allowlisted: "int", argument: item.register },
-            op: "Add",
+            op: integerOperations[item.opcode as keyof typeof integerOperations].pythonOperator,
             right: { type: "Constant", value: item.value },
           },
         }
@@ -204,8 +235,8 @@ export const compileIvrit = (source: string): Compilation => {
   );
   const pythonSource = ir
     .map((item) =>
-      item.operation === "add_int"
-        ? `${item.register} = int(${item.register}) + ${item.value}`
+      item.operation !== "legacy_opcode"
+        ? `${item.register} = int(${item.register}) ${integerOperations[item.opcode as keyof typeof integerOperations].symbol} ${item.value}`
         : `# legacy opcode ${item.opcode}`,
     )
     .join("\n");

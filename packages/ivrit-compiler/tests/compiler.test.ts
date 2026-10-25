@@ -45,3 +45,42 @@ describe("IvritCode 0.1 vertical slice", () => {
     expect(compilation.program.validationStatus).toBe("invalid");
   });
 });
+
+describe("integer arithmetic", () => {
+  it.each([
+    ["כ", "subtract_int", "Sub", "-"],
+    ["ל", "multiply_int", "Mult", "*"],
+    ["ך", "subtract_int", "Sub", "-"],
+  ])("lowers %s with its canonical integer semantics", (letter, operation, op, symbol) => {
+    const result = compileIvrit(`${letter}ִ $r22, -3`);
+    expect(result.diagnostics).toEqual([]);
+    expect(result.ir[0]).toMatchObject({ operation, register: "r22", value: -3 });
+    expect(result.pythonAst[0]).toMatchObject({ value: { op } });
+    expect(result.pythonSource).toContain(`r22 = int(r22) ${symbol} -3`);
+  });
+  it.each(["$r0, 2", "$r23, 2", "$r1 2", "$r1, 2.5", "$r1, 9007199254740992", "$r1, 2 extra"])(
+    "rejects malformed operands %s",
+    (operands) => {
+      const result = compileIvrit(`כִ ${operands}`);
+      expect(result.program.validationStatus).toBe("invalid");
+      expect(result.diagnostics.join(" ")).toContain("Invalid integer operands");
+    },
+  );
+  it("preserves multi-digit register tokens", () => {
+    expect(tokenize("$r1 $r10 $r19 $r22").map((token) => token.text)).toEqual([
+      "$r1",
+      "$r10",
+      "$r19",
+      "$r22",
+    ]);
+  });
+});
+
+describe("source validation", () => {
+  it.each(["יִ $r1, 2!", "כִ $r1, +2", "לִ $r1, 2;", "🙂 יִ $r1, 2"])(
+    "rejects skipped punctuation instead of silently executing %s",
+    (source) => {
+      expect(compileIvrit(source).diagnostics.join(" ")).toContain("Unexpected source text");
+    },
+  );
+});

@@ -44,8 +44,12 @@ export const createManifest = (
     languageVersion: IVRIT_SPEC_VERSION,
     programHash: contentHash(source.normalize("NFD")),
     purpose: overrides.purpose ?? "Local deterministic IvritCode study",
-    declaredInputs: ["r1"],
-    declaredOutputs: ["r1"],
+    declaredInputs: [
+      ...new Set(compileIvrit(source).ir.flatMap((item) => (item.register ? [item.register] : []))),
+    ],
+    declaredOutputs: [
+      ...new Set(compileIvrit(source).ir.flatMap((item) => (item.register ? [item.register] : []))),
+    ],
     capabilities,
     resourceBudget: {
       maxSteps: 1000,
@@ -122,9 +126,20 @@ const sandbox = (
   let steps = 0;
   for (const item of ir) {
     if (++steps > manifest.resourceBudget.maxSteps) throw new Error("BudgetExceeded: maxSteps");
-    if (item.operation === "add_int")
-      state[item.register!] = Math.trunc(Number(state[item.register!] ?? 0)) + item.value!;
-    else
+    if (item.operation !== "legacy_opcode") {
+      const current = state[item.register!] ?? 0;
+      if (!Number.isFinite(current) || !Number.isSafeInteger(Math.trunc(current)))
+        throw new Error("ArithmeticError: input must truncate to a safe integer");
+      const left = Math.trunc(current);
+      const value =
+        item.operation === "add_int"
+          ? left + item.value!
+          : item.operation === "subtract_int"
+            ? left - item.value!
+            : left * item.value!;
+      if (!Number.isSafeInteger(value)) throw new Error("ArithmeticError: unsafe integer result");
+      state[item.register!] = value;
+    } else
       warnings.push(
         `Legacy opcode ${item.opcode} is serialized but not executed by QEC sandbox v0.1.`,
       );

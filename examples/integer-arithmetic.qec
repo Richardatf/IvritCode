@@ -1,0 +1,4 @@
+# Experimental QEC compiler syntax, not the legacy letter-only CLI
+יִ $r10, 8
+כִ $r10, 3
+לִ $r10, -2

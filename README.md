@@ -10,9 +10,12 @@ IvritCode is implemented computation. Quantum Etz Chaim is its broader conceptua
 
 The repository contains an additive experimental compiler path for the constitutional `ivritcode-0.1` mapping. The canonical source is `spec/ivritcode-0.1.json`; the build synchronizes it into `@qec/spec`, so consumers never copy mappings manually.
 
-The first executable slice is `יִ $r1, 5`. It tokenizes the letter and combining mark separately, preserves original code points and source spans, parses `י` as `ADD` with hiriq integer mode, lowers to target-neutral QEC IR, and renders an allowlisted Python-AST description corresponding to `r1 = int(r1) + 5`.
+The introductory executable slice is `יִ $r1, 5`. It tokenizes the letter and combining mark separately, preserves original code points and source spans, parses `י` as `ADD` with hiriq integer mode, lowers to target-neutral QEC IR, and renders an allowlisted Python-AST description corresponding to `r1 = int(r1) + 5`.
 
 The generated Python is inspectable output; the hosted playground never executes it. Safe examples run through the metered local QEC IR interpreter after manifest policy and explicit Da'at verification. `web.read` and `grid.compute` are denied by default. Aleph Olam is reserved metadata and disabled in 0.1.
+
+Integer SUBTRACT (`כִ`) and MULTIPLY (`לִ`) are also executable. See
+[QEC integer arithmetic](docs/INTEGER_ARITHMETIC.md) for syntax, limits, and a multi-step example.
 
 ### Architecture decisions
 
@@ -25,7 +28,7 @@ The generated Python is inspectable output; the hosted playground never executes
 
 ### Current limitations
 
-This milestone executes only ADD with hiriq/integer operands. The complete 22-opcode and cantillation state machine, grapheme-cursor editing, Gateway API, Infinite Wave graph, and QuantumEtzChaim visual application remain later milestones. Legacy opcodes can be inspected but are not executed by the QEC sandbox. The Python bridge constructs only allowlisted `ast` nodes and uses `ast.unparse`; it emits code but never executes it. The current deterministic FNV-1a content hash is an integrity checksum, not a cryptographic signature.
+This milestone executes ADD, SUBTRACT, and MULTIPLY with hiriq/integer operands. Literals and runtime results must remain JavaScript safe integers; arithmetic overflow is rejected. The complete 22-opcode and cantillation state machine, grapheme-cursor editing, Gateway API, Infinite Wave graph, and QuantumEtzChaim visual application remain later milestones. Legacy opcodes can be inspected but are not executed by the QEC sandbox. The Python bridge constructs only allowlisted `ast` nodes and uses `ast.unparse`; it emits code but never executes it. The current deterministic FNV-1a content hash is an integrity checksum, not a cryptographic signature.
 
 ## Quick start
 
