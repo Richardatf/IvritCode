@@ -157,3 +157,19 @@
     display: none;
   }
 }
+
+.new-landing-hero > a {
+  margin: 1rem 0 2rem;
+}
+.new-landing-section pre {
+  max-width: 34rem;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  overflow-x: auto;
+  text-align: left;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  color: var(--text);
+  font-size: 1.2rem;
+}
