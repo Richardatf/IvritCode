@@ -1,21 +1,24 @@
 {
   "schema": "ivritcode.script-registry",
-  "version": "2.0.0-alpha.1",
-  "description": "Canonical Hebrew letter identities and script representations for IvritCode.",
+  "version": "2.0.0-alpha.2",
+  "description": "Canonical Hebrew letter identities and historically grounded script representations for IvritCode.",
   "principles": {
     "glyph_is_identity": false,
     "canonical_identity_is_script_independent": true,
     "historical_claims_require_provenance": true,
     "reconstruction_must_be_labeled": true,
-    "machine_semantics_are_independent_of_font": true
+    "machine_semantics_are_independent_of_font": true,
+    "later_vocalization_and_cantillation_are_overlays": true
   },
   "status_types": ["ATTESTED", "RECONSTRUCTED", "PROPOSED", "MODERN"],
   "confidence_types": ["HIGH", "MEDIUM", "LOW", "UNASSIGNED"],
   "scripts": {
-    "MODERN": {"id":"IVC:SCRIPT:MODERN","name":"Modern Hebrew","direction":"RTL","unicode_script":"Hebrew","font_role":"modern"},
-    "PALEO": {"id":"IVC:SCRIPT:PALEO","name":"Paleo-Hebrew","direction":"RTL","unicode_strategy":"Phoenician Unicode block used for computational representation","font_role":"paleo","note":"Visual rendering may use an IvritCode Paleo-Hebrew font rather than assuming every Phoenician Unicode glyph is a historically exact Paleo-Hebrew letterform."},
-    "PROTO": {"id":"IVC:SCRIPT:PROTO","name":"Proto / Early Alphabetic","direction":"RTL","unicode_strategy":"CUSTOM_GLYPH","font_role":"proto","default_status":"RECONSTRUCTED"},
-    "RECOVERED": {"id":"IVC:SCRIPT:RECOVERED","name":"IvritCode Recovered","direction":"RTL","unicode_strategy":"CUSTOM_GLYPH","font_role":"recovered","default_status":"RECONSTRUCTED"}
+    "MODERN_HEBREW": {"id":"IVC:SCRIPT:MODERN_HEBREW","name":"Modern / Square Hebrew","direction":"RTL","unicode_script":"Hebrew","font_role":"modern","status":"MODERN"},
+    "ARAMAIC": {"id":"IVC:SCRIPT:ARAMAIC","name":"Aramaic","direction":"RTL","unicode_strategy":"SOURCE_AWARE","font_role":"aramaic","status":"ATTESTED","note":"Specific glyphs must be tied to a named corpus, inscription, manuscript, period, or scholarly source."},
+    "PALEO_HEBREW": {"id":"IVC:SCRIPT:PALEO_HEBREW","name":"Paleo-Hebrew","direction":"RTL","unicode_strategy":"SOURCE_AWARE","font_role":"paleo_hebrew","status":"ATTESTED","note":"Do not treat the Unicode Phoenician glyph as a universal Paleo-Hebrew facsimile. Use source-aware Paleo-Hebrew forms for paleographic display."},
+    "PHOENICIAN": {"id":"IVC:SCRIPT:PHOENICIAN","name":"Phoenician","direction":"RTL","unicode_script":"Phoenician","font_role":"phoenician","status":"ATTESTED"},
+    "PROTO_CANAANITE": {"id":"IVC:SCRIPT:PROTO_CANAANITE","name":"Proto-Canaanite / Early Alphabetic","direction":"RTL","unicode_strategy":"SOURCE_AWARE_CUSTOM_GLYPH","font_role":"proto_canaanite","status":"ATTESTED_OR_RECONSTRUCTED","note":"Classification and glyph identity must carry provenance and confidence."},
+    "PROTO_SINAITIC": {"id":"IVC:SCRIPT:PROTO_SINAITIC","name":"Proto-Sinaitic","direction":"RTL","unicode_strategy":"SOURCE_AWARE_CUSTOM_GLYPH","font_role":"proto_sinaitic","status":"ATTESTED_OR_RECONSTRUCTED","note":"Use only source-aware forms and explicitly record scholarly uncertainty."}
   },
   "letters": [
     ["ALEPH",1,"Aleph","אָלֶף",1,"ʾ","א","U+05D0","𐤀","U+10900","PHOENICIAN LETTER ALF"],
@@ -41,13 +44,16 @@
     ["SHIN",21,"Shin","שִׁין",300,"š","ש","U+05E9","𐤔","U+10914","PHOENICIAN LETTER SHIN"],
     ["TAV",22,"Tav","תָּו",400,"t","ת","U+05EA","𐤕","U+10915","PHOENICIAN LETTER TAU"]
   ],
-  "letter_record_fields": ["machine_token","index","name","hebrew_name","gematria","transliteration","modern_glyph","modern_unicode","paleo_glyph","paleo_unicode","paleo_unicode_name"],
+  "letter_record_fields": ["machine_token","index","name","hebrew_name","gematria","transliteration","modern_glyph","modern_unicode","phoenician_glyph","phoenician_unicode","phoenician_unicode_name"],
   "representation_defaults": {
-    "MODERN": {"status":"MODERN","confidence":"HIGH"},
-    "PALEO": {"status":"ATTESTED","confidence":"HIGH"},
-    "PROTO": {"glyph_id_pattern":"PROTO_{machine_token}","authoring_tag_pattern":"(P){machine_token}","status":"RECONSTRUCTED","confidence":"UNASSIGNED"},
-    "RECOVERED": {"glyph_id_pattern":"RECOVERED_{machine_token}","authoring_tag_pattern":"(R){machine_token}","status":"RECONSTRUCTED","confidence":"UNASSIGNED"}
+    "MODERN_HEBREW": {"status":"MODERN","confidence":"HIGH"},
+    "PHOENICIAN": {"status":"ATTESTED","confidence":"HIGH"},
+    "ARAMAIC": {"status":"ATTESTED","confidence":"UNASSIGNED","requires_provenance":true},
+    "PALEO_HEBREW": {"status":"ATTESTED","confidence":"UNASSIGNED","requires_provenance":true},
+    "PROTO_CANAANITE": {"status":"ATTESTED","confidence":"UNASSIGNED","requires_provenance":true},
+    "PROTO_SINAITIC": {"status":"ATTESTED","confidence":"UNASSIGNED","requires_provenance":true}
   },
+  "overlay_registry": "modifier-registry.json",
   "modern_final_forms": {"KAF":"ך","MEM":"ם","NUN":"ן","PE":"ף","TSADI":"ץ"},
   "meta_states": {
     "ALEPH_OLAM": {"id":"IVC:META:ALEPH_OLAM","name":"Aleph Olam","type":"META_STATE","is_hebrew_letter":false,"historical_script_member":false,"description":"Reserved IvritCode meta-state operating on system-level state rather than representing a twenty-third historical Hebrew letter."}
