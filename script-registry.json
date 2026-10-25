@@ -1,0 +1,55 @@
+{
+  "schema": "ivritcode.script-registry",
+  "version": "2.0.0-alpha.1",
+  "description": "Canonical Hebrew letter identities and script representations for IvritCode.",
+  "principles": {
+    "glyph_is_identity": false,
+    "canonical_identity_is_script_independent": true,
+    "historical_claims_require_provenance": true,
+    "reconstruction_must_be_labeled": true,
+    "machine_semantics_are_independent_of_font": true
+  },
+  "status_types": ["ATTESTED", "RECONSTRUCTED", "PROPOSED", "MODERN"],
+  "confidence_types": ["HIGH", "MEDIUM", "LOW", "UNASSIGNED"],
+  "scripts": {
+    "MODERN": {"id":"IVC:SCRIPT:MODERN","name":"Modern Hebrew","direction":"RTL","unicode_script":"Hebrew","font_role":"modern"},
+    "PALEO": {"id":"IVC:SCRIPT:PALEO","name":"Paleo-Hebrew","direction":"RTL","unicode_strategy":"Phoenician Unicode block used for computational representation","font_role":"paleo","note":"Visual rendering may use an IvritCode Paleo-Hebrew font rather than assuming every Phoenician Unicode glyph is a historically exact Paleo-Hebrew letterform."},
+    "PROTO": {"id":"IVC:SCRIPT:PROTO","name":"Proto / Early Alphabetic","direction":"RTL","unicode_strategy":"CUSTOM_GLYPH","font_role":"proto","default_status":"RECONSTRUCTED"},
+    "RECOVERED": {"id":"IVC:SCRIPT:RECOVERED","name":"IvritCode Recovered","direction":"RTL","unicode_strategy":"CUSTOM_GLYPH","font_role":"recovered","default_status":"RECONSTRUCTED"}
+  },
+  "letters": [
+    ["ALEPH",1,"Aleph","אָלֶף",1,"ʾ","א","U+05D0","𐤀","U+10900","PHOENICIAN LETTER ALF"],
+    ["BET",2,"Bet","בֵּית",2,"b","ב","U+05D1","𐤁","U+10901","PHOENICIAN LETTER BET"],
+    ["GIMEL",3,"Gimel","גִּימֶל",3,"g","ג","U+05D2","𐤂","U+10902","PHOENICIAN LETTER GAML"],
+    ["DALET",4,"Dalet","דָּלֶת",4,"d","ד","U+05D3","𐤃","U+10903","PHOENICIAN LETTER DELT"],
+    ["HE",5,"He","הֵא",5,"h","ה","U+05D4","𐤄","U+10904","PHOENICIAN LETTER HE"],
+    ["VAV",6,"Vav","וָו",6,"w/v","ו","U+05D5","𐤅","U+10905","PHOENICIAN LETTER WAU"],
+    ["ZAYIN",7,"Zayin","זַיִן",7,"z","ז","U+05D6","𐤆","U+10906","PHOENICIAN LETTER ZAI"],
+    ["CHET",8,"Chet","חֵית",8,"ḥ","ח","U+05D7","𐤇","U+10907","PHOENICIAN LETTER HET"],
+    ["TET",9,"Tet","טֵית",9,"ṭ","ט","U+05D8","𐤈","U+10908","PHOENICIAN LETTER TET"],
+    ["YOD",10,"Yod","יוֹד",10,"y","י","U+05D9","𐤉","U+10909","PHOENICIAN LETTER YOD"],
+    ["KAF",11,"Kaf","כַּף",20,"k","כ","U+05DB","𐤊","U+1090A","PHOENICIAN LETTER KAF"],
+    ["LAMED",12,"Lamed","לָמֶד",30,"l","ל","U+05DC","𐤋","U+1090B","PHOENICIAN LETTER LAMD"],
+    ["MEM",13,"Mem","מֵם",40,"m","מ","U+05DE","𐤌","U+1090C","PHOENICIAN LETTER MEM"],
+    ["NUN",14,"Nun","נוּן",50,"n","נ","U+05E0","𐤍","U+1090D","PHOENICIAN LETTER NUN"],
+    ["SAMEKH",15,"Samekh","סָמֶךְ",60,"s","ס","U+05E1","𐤎","U+1090E","PHOENICIAN LETTER SEMK"],
+    ["AYIN",16,"Ayin","עַיִן",70,"ʿ","ע","U+05E2","𐤏","U+1090F","PHOENICIAN LETTER AIN"],
+    ["PE",17,"Pe","פֵּא",80,"p","פ","U+05E4","𐤐","U+10910","PHOENICIAN LETTER PE"],
+    ["TSADI",18,"Tsadi","צָדִי",90,"ṣ","צ","U+05E6","𐤑","U+10911","PHOENICIAN LETTER SADE"],
+    ["QOF",19,"Qof","קוֹף",100,"q","ק","U+05E7","𐤒","U+10912","PHOENICIAN LETTER QOF"],
+    ["RESH",20,"Resh","רֵישׁ",200,"r","ר","U+05E8","𐤓","U+10913","PHOENICIAN LETTER ROSH"],
+    ["SHIN",21,"Shin","שִׁין",300,"š","ש","U+05E9","𐤔","U+10914","PHOENICIAN LETTER SHIN"],
+    ["TAV",22,"Tav","תָּו",400,"t","ת","U+05EA","𐤕","U+10915","PHOENICIAN LETTER TAU"]
+  ],
+  "letter_record_fields": ["machine_token","index","name","hebrew_name","gematria","transliteration","modern_glyph","modern_unicode","paleo_glyph","paleo_unicode","paleo_unicode_name"],
+  "representation_defaults": {
+    "MODERN": {"status":"MODERN","confidence":"HIGH"},
+    "PALEO": {"status":"ATTESTED","confidence":"HIGH"},
+    "PROTO": {"glyph_id_pattern":"PROTO_{machine_token}","authoring_tag_pattern":"(P){machine_token}","status":"RECONSTRUCTED","confidence":"UNASSIGNED"},
+    "RECOVERED": {"glyph_id_pattern":"RECOVERED_{machine_token}","authoring_tag_pattern":"(R){machine_token}","status":"RECONSTRUCTED","confidence":"UNASSIGNED"}
+  },
+  "modern_final_forms": {"KAF":"ך","MEM":"ם","NUN":"ן","PE":"ף","TSADI":"ץ"},
+  "meta_states": {
+    "ALEPH_OLAM": {"id":"IVC:META:ALEPH_OLAM","name":"Aleph Olam","type":"META_STATE","is_hebrew_letter":false,"historical_script_member":false,"description":"Reserved IvritCode meta-state operating on system-level state rather than representing a twenty-third historical Hebrew letter."}
+  }
+}
