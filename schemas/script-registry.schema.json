@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ivritcode.org/schemas/script-registry.schema.json",
+  "title": "IvritCode Script Registry",
+  "type": "object",
+  "required": ["schema", "version", "scripts", "letters", "meta_states"],
+  "properties": {
+    "schema": { "const": "ivritcode.script-registry" },
+    "version": { "type": "string" },
+    "description": { "type": "string" },
+    "principles": { "type": "object" },
+    "status_types": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "confidence_types": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "scripts": { "type": "object", "required": ["MODERN", "PALEO", "PROTO", "RECOVERED"] },
+    "letters": {
+      "type": "array",
+      "minItems": 22,
+      "maxItems": 22,
+      "items": {
+        "type": "object",
+        "required": ["id", "index", "name", "hebrew_name", "gematria", "transliteration", "machine_token", "representations"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^IVC:LETTER:[A-Z]+$" },
+          "index": { "type": "integer", "minimum": 1, "maximum": 22 },
+          "name": { "type": "string" },
+          "hebrew_name": { "type": "string" },
+          "gematria": { "type": "integer", "minimum": 1 },
+          "transliteration": { "type": "string" },
+          "machine_token": { "type": "string", "pattern": "^[A-Z]+$" },
+          "representations": {
+            "type": "object",
+            "required": ["MODERN", "PALEO", "PROTO", "RECOVERED"]
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "meta_states": { "type": "object", "required": ["ALEPH_OLAM"] }
+  },
+  "additionalProperties": true
+}
