@@ -4,3 +4,13 @@ node_modules/
 coverage/
 package-lock.json
 apps/web/public/og.png
+
+# IvritCode canonical registries/specification assets are intentionally hand-authored.
+script-registry.json
+modifier-registry.json
+schemas/script-registry.schema.json
+docs/LETTER_STACK_SPEC.md
+docs/TEAMIM_CONTROL_MODEL.md
+src/scriptRegistry.js
+apps/web/src/components/LetterExplorer.tsx
+apps/web/src/components/LetterExplorer.css
