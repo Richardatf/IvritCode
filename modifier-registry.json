@@ -1,12 +1,13 @@
 {
   "schema": "ivritcode.modifier-registry",
-  "version": "2.0.0-alpha.1",
+  "version": "2.0.0-alpha.2",
   "description": "Independent IvritCode modifier layers for vocalization, articulation, and cantillation.",
   "principles": {
     "modifiers_are_script_independent": true,
     "ancient_display_is_overlay_not_artifact_claim": true,
     "historical_meaning_is_distinct_from_machine_semantics": true,
-    "rendering_uses_independent_layers": true
+    "rendering_uses_independent_layers": true,
+    "teamim_machine_mapping_is_analogical_not_historical": true
   },
   "display_modes": {
     "ORIGINAL": "Show only marks attested on the source artifact.",
@@ -14,6 +15,16 @@
     "TIBERIAN_OVERLAY": "Project later Tiberian vocalization onto the selected script as an analytical/educational overlay.",
     "MASORETIC_OVERLAY": "Project Masoretic cantillation onto the selected script as an analytical/educational overlay.",
     "COMPUTATIONAL": "Expose IvritCode machine semantics for the selected modifiers."
+  },
+  "machine_semantic_vocabulary": {
+    "TERMINATE_SEQUENCE": "Close the complete sequence.",
+    "CLOSE_MAJOR_GROUP": "Close a principal nested group.",
+    "CLOSE_GROUP": "Close the current group.",
+    "CLOSE_MINOR_GROUP": "Close a subordinate group.",
+    "SEPARATE": "Create a weak boundary while retaining parent context.",
+    "BIND_NEXT": "Bind the current operation to the following operation or group.",
+    "BIND_STRONG_NEXT": "Bind tightly to the following operation or group.",
+    "CHAIN_NEXT": "Continue a multi-operation phrase without closing context."
   },
   "niqqud": [
     {"id":"IVC:NIQQUD:SHEVA","name":"Sheva","mark":"ְ","unicode":"U+05B0"},
@@ -33,37 +44,42 @@
     {"id":"IVC:ARTICULATION:SHIN_DOT","name":"Shin Dot","mark":"ׁ","unicode":"U+05C1"},
     {"id":"IVC:ARTICULATION:SIN_DOT","name":"Sin Dot","mark":"ׂ","unicode":"U+05C2"}
   ],
+  "teamim_systems": {
+    "PROSE": {"name":"Twenty-one books / prose accent system","mapping_status":"DRAFT"},
+    "POETIC": {"name":"Psalms, Proverbs, Job accent system","mapping_status":"UNMAPPED","note":"Must be modeled separately."}
+  },
   "teamim": [
-    {"id":"IVC:TAAM:ETNACHTA","name":"Etnahta","mark":"֑","unicode":"U+0591","machine_semantics":null},
-    {"id":"IVC:TAAM:SEGOL","name":"Segol","mark":"֒","unicode":"U+0592","machine_semantics":null},
-    {"id":"IVC:TAAM:SHALSHELET","name":"Shalshelet","mark":"֓","unicode":"U+0593","machine_semantics":null},
-    {"id":"IVC:TAAM:ZAQEF_QATAN","name":"Zaqef Qatan","mark":"֔","unicode":"U+0594","machine_semantics":null},
-    {"id":"IVC:TAAM:ZAQEF_GADOL","name":"Zaqef Gadol","mark":"֕","unicode":"U+0595","machine_semantics":null},
-    {"id":"IVC:TAAM:TIPEHA","name":"Tipeha","mark":"֖","unicode":"U+0596","machine_semantics":null},
-    {"id":"IVC:TAAM:REVIA","name":"Revia","mark":"֗","unicode":"U+0597","machine_semantics":null},
-    {"id":"IVC:TAAM:ZARQA","name":"Zarqa","mark":"֘","unicode":"U+0598","machine_semantics":null},
-    {"id":"IVC:TAAM:PASHTA","name":"Pashta","mark":"֙","unicode":"U+0599","machine_semantics":null},
-    {"id":"IVC:TAAM:YETIV","name":"Yetiv","mark":"֚","unicode":"U+059A","machine_semantics":null},
-    {"id":"IVC:TAAM:TEVIR","name":"Tevir","mark":"֛","unicode":"U+059B","machine_semantics":null},
-    {"id":"IVC:TAAM:GERESH","name":"Geresh","mark":"֜","unicode":"U+059C","machine_semantics":null},
-    {"id":"IVC:TAAM:GERESH_MUQDAM","name":"Geresh Muqdam","mark":"֝","unicode":"U+059D","machine_semantics":null},
-    {"id":"IVC:TAAM:GERSHAYIM","name":"Gershayim","mark":"֞","unicode":"U+059E","machine_semantics":null},
-    {"id":"IVC:TAAM:QARNEY_PARA","name":"Qarney Para","mark":"֟","unicode":"U+059F","machine_semantics":null},
-    {"id":"IVC:TAAM:TELISHA_GEDOLA","name":"Telisha Gedola","mark":"֠","unicode":"U+05A0","machine_semantics":null},
-    {"id":"IVC:TAAM:PAZER","name":"Pazer","mark":"֡","unicode":"U+05A1","machine_semantics":null},
-    {"id":"IVC:TAAM:ATNAH_HAFUKH","name":"Atnah Hafukh","mark":"֢","unicode":"U+05A2","machine_semantics":null},
-    {"id":"IVC:TAAM:MUNAH","name":"Munah","mark":"֣","unicode":"U+05A3","machine_semantics":null},
-    {"id":"IVC:TAAM:MAHAPAKH","name":"Mahapakh","mark":"֤","unicode":"U+05A4","machine_semantics":null},
-    {"id":"IVC:TAAM:MERKHA","name":"Merkha","mark":"֥","unicode":"U+05A5","machine_semantics":null},
-    {"id":"IVC:TAAM:MERKHA_KEFULA","name":"Merkha Kefula","mark":"֦","unicode":"U+05A6","machine_semantics":null},
-    {"id":"IVC:TAAM:DARGA","name":"Darga","mark":"֧","unicode":"U+05A7","machine_semantics":null},
-    {"id":"IVC:TAAM:QADMA","name":"Qadma","mark":"֨","unicode":"U+05A8","machine_semantics":null},
-    {"id":"IVC:TAAM:TELISHA_QETANA","name":"Telisha Qetana","mark":"֩","unicode":"U+05A9","machine_semantics":null},
-    {"id":"IVC:TAAM:YERAH_BEN_YOMO","name":"Yerah Ben Yomo","mark":"֪","unicode":"U+05AA","machine_semantics":null},
-    {"id":"IVC:TAAM:OLE","name":"Ole","mark":"֫","unicode":"U+05AB","machine_semantics":null},
-    {"id":"IVC:TAAM:ILUY","name":"Iluy","mark":"֬","unicode":"U+05AC","machine_semantics":null},
-    {"id":"IVC:TAAM:DEHI","name":"Dehi","mark":"֭","unicode":"U+05AD","machine_semantics":null},
-    {"id":"IVC:TAAM:ZINOR","name":"Zinor","mark":"֮","unicode":"U+05AE","machine_semantics":null}
+    {"id":"IVC:TAAM:ETNACHTA","name":"Etnahta","mark":"֑","unicode":"U+0591","prose_control":{"class":"DISJUNCTIVE","strength":90,"scope":"GROUP","machine_action":"CLOSE_MAJOR_GROUP","mapping_status":"DRAFT"}},
+    {"id":"IVC:TAAM:SEGOL","name":"Segol","mark":"֒","unicode":"U+0592","prose_control":{"class":"DISJUNCTIVE","strength":80,"scope":"GROUP","machine_action":"CLOSE_GROUP","mapping_status":"DRAFT"}},
+    {"id":"IVC:TAAM:SHALSHELET","name":"Shalshelet","mark":"֓","unicode":"U+0593","prose_control":{"class":"SPECIAL","strength":80,"scope":"GROUP","machine_action":"CLOSE_GROUP","mapping_status":"DRAFT"}},
+    {"id":"IVC:TAAM:ZAQEF_QATAN","name":"Zaqef Qatan","mark":"֔","unicode":"U+0594","prose_control":{"class":"DISJUNCTIVE","strength":75,"scope":"GROUP","machine_action":"CLOSE_GROUP","mapping_status":"DRAFT"}},
+    {"id":"IVC:TAAM:ZAQEF_GADOL","name":"Zaqef Gadol","mark":"֕","unicode":"U+0595","prose_control":{"class":"DISJUNCTIVE","strength":75,"scope":"GROUP","machine_action":"CLOSE_GROUP","mapping_status":"DRAFT"}},
+    {"id":"IVC:TAAM:TIPEHA","name":"Tipeha","mark":"֖","unicode":"U+0596","prose_control":{"class":"DISJUNCTIVE","strength":60,"scope":"PHRASE","machine_action":"CLOSE_MINOR_GROUP","mapping_status":"DRAFT"}},
+    {"id":"IVC:TAAM:REVIA","name":"Revia","mark":"֗","unicode":"U+0597","prose_control":{"class":"DISJUNCTIVE","strength":55,"scope":"PHRASE","machine_action":"CLOSE_MINOR_GROUP","mapping_status":"DRAFT"}},
+    {"id":"IVC:TAAM:ZARQA","name":"Zarqa","mark":"֘","unicode":"U+0598","prose_control":{"class":"DISJUNCTIVE","strength":50,"scope":"PHRASE","machine_action":"CLOSE_MINOR_GROUP","mapping_status":"DRAFT"}},
+    {"id":"IVC:TAAM:PASHTA","name":"Pashta","mark":"֙","unicode":"U+0599","prose_control":{"class":"DISJUNCTIVE","strength":50,"scope":"PHRASE","machine_action":"CLOSE_MINOR_GROUP","mapping_status":"DRAFT"}},
+    {"id":"IVC:TAAM:YETIV","name":"Yetiv","mark":"֚","unicode":"U+059A","prose_control":{"class":"DISJUNCTIVE","strength":50,"scope":"PHRASE","machine_action":"CLOSE_MINOR_GROUP","mapping_status":"DRAFT"}},
+    {"id":"IVC:TAAM:TEVIR","name":"Tevir","mark":"֛","unicode":"U+059B","prose_control":{"class":"DISJUNCTIVE","strength":45,"scope":"PHRASE","machine_action":"SEPARATE","mapping_status":"DRAFT"}},
+    {"id":"IVC:TAAM:GERESH","name":"Geresh","mark":"֜","unicode":"U+059C","prose_control":{"class":"DISJUNCTIVE","strength":40,"scope":"PHRASE","machine_action":"SEPARATE","mapping_status":"DRAFT"}},
+    {"id":"IVC:TAAM:GERESH_MUQDAM","name":"Geresh Muqdam","mark":"֝","unicode":"U+059D","prose_control":{"class":"DISJUNCTIVE","strength":40,"scope":"PHRASE","machine_action":"SEPARATE","mapping_status":"DRAFT"}},
+    {"id":"IVC:TAAM:GERSHAYIM","name":"Gershayim","mark":"֞","unicode":"U+059E","prose_control":{"class":"DISJUNCTIVE","strength":40,"scope":"PHRASE","machine_action":"SEPARATE","mapping_status":"DRAFT"}},
+    {"id":"IVC:TAAM:QARNEY_PARA","name":"Qarney Para","mark":"֟","unicode":"U+059F","prose_control":{"class":"SPECIAL","strength":35,"scope":"PHRASE","machine_action":"SEPARATE","mapping_status":"DRAFT"}},
+    {"id":"IVC:TAAM:TELISHA_GEDOLA","name":"Telisha Gedola","mark":"֠","unicode":"U+05A0","prose_control":{"class":"DISJUNCTIVE","strength":35,"scope":"PHRASE","machine_action":"SEPARATE","mapping_status":"DRAFT"}},
+    {"id":"IVC:TAAM:PAZER","name":"Pazer","mark":"֡","unicode":"U+05A1","prose_control":{"class":"DISJUNCTIVE","strength":35,"scope":"PHRASE","machine_action":"SEPARATE","mapping_status":"DRAFT"}},
+    {"id":"IVC:TAAM:ATNAH_HAFUKH","name":"Atnah Hafukh","mark":"֢","unicode":"U+05A2","prose_control":null},
+    {"id":"IVC:TAAM:MUNAH","name":"Munah","mark":"֣","unicode":"U+05A3","prose_control":{"class":"CONJUNCTIVE","strength":0,"scope":"TOKEN","machine_action":"BIND_NEXT","mapping_status":"DRAFT"}},
+    {"id":"IVC:TAAM:MAHAPAKH","name":"Mahapakh","mark":"֤","unicode":"U+05A4","prose_control":{"class":"CONJUNCTIVE","strength":0,"scope":"TOKEN","machine_action":"BIND_NEXT","mapping_status":"DRAFT"}},
+    {"id":"IVC:TAAM:MERKHA","name":"Merkha","mark":"֥","unicode":"U+05A5","prose_control":{"class":"CONJUNCTIVE","strength":0,"scope":"TOKEN","machine_action":"BIND_NEXT","mapping_status":"DRAFT"}},
+    {"id":"IVC:TAAM:MERKHA_KEFULA","name":"Merkha Kefula","mark":"֦","unicode":"U+05A6","prose_control":{"class":"CONJUNCTIVE","strength":0,"scope":"TOKEN","machine_action":"BIND_STRONG_NEXT","mapping_status":"DRAFT"}},
+    {"id":"IVC:TAAM:DARGA","name":"Darga","mark":"֧","unicode":"U+05A7","prose_control":{"class":"CONJUNCTIVE","strength":0,"scope":"TOKEN","machine_action":"CHAIN_NEXT","mapping_status":"DRAFT"}},
+    {"id":"IVC:TAAM:QADMA","name":"Qadma","mark":"֨","unicode":"U+05A8","prose_control":{"class":"CONJUNCTIVE","strength":0,"scope":"TOKEN","machine_action":"CHAIN_NEXT","mapping_status":"DRAFT"}},
+    {"id":"IVC:TAAM:TELISHA_QETANA","name":"Telisha Qetana","mark":"֩","unicode":"U+05A9","prose_control":{"class":"CONJUNCTIVE","strength":0,"scope":"TOKEN","machine_action":"BIND_NEXT","mapping_status":"DRAFT"}},
+    {"id":"IVC:TAAM:YERAH_BEN_YOMO","name":"Yerah Ben Yomo","mark":"֪","unicode":"U+05AA","prose_control":{"class":"CONJUNCTIVE","strength":0,"scope":"TOKEN","machine_action":"BIND_NEXT","mapping_status":"DRAFT"}},
+    {"id":"IVC:TAAM:OLE","name":"Ole","mark":"֫","unicode":"U+05AB","prose_control":null},
+    {"id":"IVC:TAAM:ILUY","name":"Iluy","mark":"֬","unicode":"U+05AC","prose_control":null},
+    {"id":"IVC:TAAM:DEHI","name":"Dehi","mark":"֭","unicode":"U+05AD","prose_control":null},
+    {"id":"IVC:TAAM:ZINOR","name":"Zinor","mark":"֮","unicode":"U+05AE","prose_control":null}
   ],
-  "machine_semantics_note": "Machine meanings are intentionally unassigned here. They require a separate reviewed mapping so traditional linguistic/cantillation functions are not conflated with IvritCode execution semantics."
+  "terminal_control": {"id":"IVC:TAAM:SOF_PASUQ_CONTEXT","name":"Silluq / Sof Pasuq terminal context","class":"DISJUNCTIVE","strength":100,"scope":"SEQUENCE","machine_action":"TERMINATE_SEQUENCE","mapping_status":"DRAFT"},
+  "machine_semantics_note": "Machine meanings are IvritCode analogies derived from structural roles. They are not historical claims about Masoretic intent. Contextual accent hierarchy remains richer than this draft numeric compiler aid."
 }
