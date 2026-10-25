@@ -41,3 +41,19 @@ test("restores Hebrew source from the Quantum Etz Chaim return link", async ({ p
   await page.goto(`/?source=${encodeURIComponent("אור")}#try`);
   await expect(page.getByRole("textbox", { name: "First IvritCode program" })).toHaveValue("אור");
 });
+
+test("executes the integer arithmetic example in the QEC playground", async ({ page }) => {
+  await page.goto("/");
+  await page
+    .getByText("Advanced: experimental ivritcode-0.1 compiler and QEC details", { exact: true })
+    .click();
+  await expect(page.getByLabel("Pointed Hebrew source")).toHaveValue(
+    "יִ $r1, 5\nכִ $r1, 2\nלִ $r1, 3",
+  );
+  await page.getByRole("button", { name: "Compile and run safe example" }).click();
+  await expect(page.locator(".qec-output")).toContainText("r1 = 9");
+  await expect(page.locator(".qec-output")).toContainText("3 metered steps");
+  await page.getByLabel("Pointed Hebrew source").fill("לִ $r1, 1.5");
+  await page.getByRole("button", { name: "Compile and run safe example" }).click();
+  await expect(page.locator(".qec-lab").getByRole("alert")).toContainText("VerificationDenied");
+});

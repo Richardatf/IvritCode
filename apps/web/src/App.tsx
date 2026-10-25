@@ -40,7 +40,7 @@ import { HebrewKeyboard } from "./components/HebrewKeyboard.js";
 import { deletePreviousGrapheme, insertHebrewInput } from "./hebrewInput.js";
 import { downloadProgram, initialState, type InitialMode } from "./logic.js";
 const SAMPLE = "# IvritCode · בראשית\nב ר א ש י ת";
-const QEC_SAMPLE = "יִ $r1, 5";
+const QEC_SAMPLE = "יִ $r1, 5\nכִ $r1, 2\nלִ $r1, 3";
 const DEMO_SAMPLE = "בראשית";
 const HEBREW_KEYBOARD_LETTERS = Array.from(HEBREW_LETTERS);
 const HEBREW_NIQQUD = [
@@ -1127,7 +1127,9 @@ export function App() {
                 </h3>
                 <p>
                   Letters choose operations, niqqud choose value/addressing modes, and selected
-                  cantillation marks structure control flow. These are engineering conventions.
+                  cantillation marks describe reserved control structure. Integer ADD, SUBTRACT, and
+                  MULTIPLY run locally; control flow remains reserved. These are engineering
+                  conventions.
                 </p>
               </div>
               <img
@@ -1170,7 +1172,7 @@ export function App() {
                   <strong>r1 = {qecRun?.result.outputs.r1 ?? "—"}</strong>
                   <span>
                     {qecRun
-                      ? `${qecRun.result.budgetUsed.steps} metered step`
+                      ? `${qecRun.result.budgetUsed.steps} metered ${qecRun.result.budgetUsed.steps === 1 ? "step" : "steps"}`
                       : "Run the verified IR to see a result."}
                   </span>
                 </div>
