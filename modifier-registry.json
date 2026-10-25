@@ -1,0 +1,69 @@
+{
+  "schema": "ivritcode.modifier-registry",
+  "version": "2.0.0-alpha.1",
+  "description": "Independent IvritCode modifier layers for vocalization, articulation, and cantillation.",
+  "principles": {
+    "modifiers_are_script_independent": true,
+    "ancient_display_is_overlay_not_artifact_claim": true,
+    "historical_meaning_is_distinct_from_machine_semantics": true,
+    "rendering_uses_independent_layers": true
+  },
+  "display_modes": {
+    "ORIGINAL": "Show only marks attested on the source artifact.",
+    "NORMALIZED": "Show canonical normalized letter identities without inferred overlays.",
+    "TIBERIAN_OVERLAY": "Project later Tiberian vocalization onto the selected script as an analytical/educational overlay.",
+    "MASORETIC_OVERLAY": "Project Masoretic cantillation onto the selected script as an analytical/educational overlay.",
+    "COMPUTATIONAL": "Expose IvritCode machine semantics for the selected modifiers."
+  },
+  "niqqud": [
+    {"id":"IVC:NIQQUD:SHEVA","name":"Sheva","mark":"ְ","unicode":"U+05B0"},
+    {"id":"IVC:NIQQUD:HATAF_SEGOL","name":"Hataf Segol","mark":"ֱ","unicode":"U+05B1"},
+    {"id":"IVC:NIQQUD:HATAF_PATAH","name":"Hataf Patah","mark":"ֲ","unicode":"U+05B2"},
+    {"id":"IVC:NIQQUD:HATAF_QAMATS","name":"Hataf Qamats","mark":"ֳ","unicode":"U+05B3"},
+    {"id":"IVC:NIQQUD:HIRIQ","name":"Hiriq","mark":"ִ","unicode":"U+05B4"},
+    {"id":"IVC:NIQQUD:TSERE","name":"Tsere","mark":"ֵ","unicode":"U+05B5"},
+    {"id":"IVC:NIQQUD:SEGOL","name":"Segol","mark":"ֶ","unicode":"U+05B6"},
+    {"id":"IVC:NIQQUD:PATAH","name":"Patah","mark":"ַ","unicode":"U+05B7"},
+    {"id":"IVC:NIQQUD:QAMATS","name":"Qamats","mark":"ָ","unicode":"U+05B8"},
+    {"id":"IVC:NIQQUD:HOLAM","name":"Holam","mark":"ֹ","unicode":"U+05B9"},
+    {"id":"IVC:NIQQUD:QUBUTS","name":"Qubuts","mark":"ֻ","unicode":"U+05BB"}
+  ],
+  "articulation": [
+    {"id":"IVC:ARTICULATION:DAGESH_MAPIQ","name":"Dagesh / Mapiq","mark":"ּ","unicode":"U+05BC"},
+    {"id":"IVC:ARTICULATION:SHIN_DOT","name":"Shin Dot","mark":"ׁ","unicode":"U+05C1"},
+    {"id":"IVC:ARTICULATION:SIN_DOT","name":"Sin Dot","mark":"ׂ","unicode":"U+05C2"}
+  ],
+  "teamim": [
+    {"id":"IVC:TAAM:ETNACHTA","name":"Etnahta","mark":"֑","unicode":"U+0591","machine_semantics":null},
+    {"id":"IVC:TAAM:SEGOL","name":"Segol","mark":"֒","unicode":"U+0592","machine_semantics":null},
+    {"id":"IVC:TAAM:SHALSHELET","name":"Shalshelet","mark":"֓","unicode":"U+0593","machine_semantics":null},
+    {"id":"IVC:TAAM:ZAQEF_QATAN","name":"Zaqef Qatan","mark":"֔","unicode":"U+0594","machine_semantics":null},
+    {"id":"IVC:TAAM:ZAQEF_GADOL","name":"Zaqef Gadol","mark":"֕","unicode":"U+0595","machine_semantics":null},
+    {"id":"IVC:TAAM:TIPEHA","name":"Tipeha","mark":"֖","unicode":"U+0596","machine_semantics":null},
+    {"id":"IVC:TAAM:REVIA","name":"Revia","mark":"֗","unicode":"U+0597","machine_semantics":null},
+    {"id":"IVC:TAAM:ZARQA","name":"Zarqa","mark":"֘","unicode":"U+0598","machine_semantics":null},
+    {"id":"IVC:TAAM:PASHTA","name":"Pashta","mark":"֙","unicode":"U+0599","machine_semantics":null},
+    {"id":"IVC:TAAM:YETIV","name":"Yetiv","mark":"֚","unicode":"U+059A","machine_semantics":null},
+    {"id":"IVC:TAAM:TEVIR","name":"Tevir","mark":"֛","unicode":"U+059B","machine_semantics":null},
+    {"id":"IVC:TAAM:GERESH","name":"Geresh","mark":"֜","unicode":"U+059C","machine_semantics":null},
+    {"id":"IVC:TAAM:GERESH_MUQDAM","name":"Geresh Muqdam","mark":"֝","unicode":"U+059D","machine_semantics":null},
+    {"id":"IVC:TAAM:GERSHAYIM","name":"Gershayim","mark":"֞","unicode":"U+059E","machine_semantics":null},
+    {"id":"IVC:TAAM:QARNEY_PARA","name":"Qarney Para","mark":"֟","unicode":"U+059F","machine_semantics":null},
+    {"id":"IVC:TAAM:TELISHA_GEDOLA","name":"Telisha Gedola","mark":"֠","unicode":"U+05A0","machine_semantics":null},
+    {"id":"IVC:TAAM:PAZER","name":"Pazer","mark":"֡","unicode":"U+05A1","machine_semantics":null},
+    {"id":"IVC:TAAM:ATNAH_HAFUKH","name":"Atnah Hafukh","mark":"֢","unicode":"U+05A2","machine_semantics":null},
+    {"id":"IVC:TAAM:MUNAH","name":"Munah","mark":"֣","unicode":"U+05A3","machine_semantics":null},
+    {"id":"IVC:TAAM:MAHAPAKH","name":"Mahapakh","mark":"֤","unicode":"U+05A4","machine_semantics":null},
+    {"id":"IVC:TAAM:MERKHA","name":"Merkha","mark":"֥","unicode":"U+05A5","machine_semantics":null},
+    {"id":"IVC:TAAM:MERKHA_KEFULA","name":"Merkha Kefula","mark":"֦","unicode":"U+05A6","machine_semantics":null},
+    {"id":"IVC:TAAM:DARGA","name":"Darga","mark":"֧","unicode":"U+05A7","machine_semantics":null},
+    {"id":"IVC:TAAM:QADMA","name":"Qadma","mark":"֨","unicode":"U+05A8","machine_semantics":null},
+    {"id":"IVC:TAAM:TELISHA_QETANA","name":"Telisha Qetana","mark":"֩","unicode":"U+05A9","machine_semantics":null},
+    {"id":"IVC:TAAM:YERAH_BEN_YOMO","name":"Yerah Ben Yomo","mark":"֪","unicode":"U+05AA","machine_semantics":null},
+    {"id":"IVC:TAAM:OLE","name":"Ole","mark":"֫","unicode":"U+05AB","machine_semantics":null},
+    {"id":"IVC:TAAM:ILUY","name":"Iluy","mark":"֬","unicode":"U+05AC","machine_semantics":null},
+    {"id":"IVC:TAAM:DEHI","name":"Dehi","mark":"֭","unicode":"U+05AD","machine_semantics":null},
+    {"id":"IVC:TAAM:ZINOR","name":"Zinor","mark":"֮","unicode":"U+05AE","machine_semantics":null}
+  ],
+  "machine_semantics_note": "Machine meanings are intentionally unassigned here. They require a separate reviewed mapping so traditional linguistic/cantillation functions are not conflated with IvritCode execution semantics."
+}
