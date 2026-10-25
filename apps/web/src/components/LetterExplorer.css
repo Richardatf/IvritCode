@@ -1,0 +1,125 @@
+.ivc-letter-explorer {
+  max-width: 960px;
+  margin: 3rem auto;
+  padding: clamp(1.25rem, 4vw, 3rem);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 24px;
+  background: rgba(8, 12, 30, 0.82);
+  backdrop-filter: blur(18px);
+}
+
+.ivc-kicker {
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.ivc-letter-controls {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: end;
+  margin: 2rem 0;
+}
+
+.ivc-letter-controls label {
+  display: grid;
+  gap: 0.45rem;
+  min-width: min(100%, 280px);
+}
+
+.ivc-letter-controls select,
+.ivc-script-switcher button {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: inherit;
+  padding: 0.7rem 1rem;
+}
+
+.ivc-script-switcher {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.ivc-script-switcher button[aria-pressed='true'] {
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 0 28px rgba(255, 255, 255, 0.08);
+}
+
+.ivc-letter-stage {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.7fr) 1fr;
+  gap: clamp(1.5rem, 5vw, 4rem);
+  align-items: center;
+  padding: 2rem 0;
+}
+
+.ivc-glyph {
+  display: grid;
+  place-items: center;
+  min-height: 240px;
+  font-size: clamp(6rem, 18vw, 12rem);
+  line-height: 1;
+  border-radius: 20px;
+  background: radial-gradient(circle, rgba(255,255,255,0.12), rgba(255,255,255,0.02) 62%);
+  text-shadow: 0 0 32px currentColor;
+}
+
+.ivc-glyph-proto,
+.ivc-glyph-recovered {
+  direction: ltr;
+  font-size: clamp(1.4rem, 5vw, 2.5rem);
+  letter-spacing: 0.08em;
+}
+
+.ivc-letter-identity {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.ivc-letter-identity strong {
+  font-size: clamp(2rem, 6vw, 4rem);
+}
+
+.ivc-letter-identity span {
+  opacity: 0.72;
+}
+
+.ivc-letter-metadata {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+
+.ivc-letter-metadata div {
+  padding: 1rem;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.ivc-letter-metadata dt {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  opacity: 0.55;
+}
+
+.ivc-letter-metadata dd {
+  margin: 0.4rem 0 0;
+}
+
+.ivc-reconstruction-note {
+  margin-top: 1.25rem;
+  padding: 1rem;
+  border-left: 3px solid currentColor;
+  opacity: 0.8;
+}
+
+@media (max-width: 640px) {
+  .ivc-letter-stage { grid-template-columns: 1fr; }
+  .ivc-glyph { min-height: 190px; }
+}
