@@ -31,6 +31,9 @@ This milestone executes only ADD with hiriq/integer operands. The complete 22-op
 
 Requires Node.js 22 or newer.
 
+For repeatable cloud installation, startup, and validation, see
+[Cloud development setup](docs/CLOUD_SETUP.md).
+
 ```bash
 npm install
 npm run typecheck
